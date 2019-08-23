@@ -34,8 +34,7 @@ const BACKGROUND_COLOR = 'black'
 const BORDER_COLOR = '#c8c8c8'
 const SCENE_COLOR = '#202020'
 
-
-function create_rectangle(svg, x, y, w, h) {
+function svgRectangle(svg, x, y, w, h) {
     var svgNS = svg.namespaceURI;
     var rect = document.createElementNS(svgNS,'rect');
     
@@ -49,11 +48,11 @@ function create_rectangle(svg, x, y, w, h) {
     return rect
 }
 
-function create_scene_background(svg) {
-    var background = create_rectangle(svg, 0, 0, SCENE_WIDTH, SCENE_HEIGHT);
+function createWindow(svg) {
+    var background = svgRectangle(svg, 0, 0, SCENE_WIDTH, SCENE_HEIGHT);
     background.setAttribute('fill', BACKGROUND_COLOR);
     
-    var border = create_rectangle(
+    var border = svgRectangle(
         svg,
         SCENE_BORDER,
         SCENE_BORDER,
@@ -61,7 +60,7 @@ function create_scene_background(svg) {
         SCENE_HEIGHT - 2 * SCENE_BORDER);
     border.setAttribute('stroke', BORDER_COLOR);
     
-    var scene = create_rectangle(
+    var scene = svgRectangle(
         svg,
         SCENE_MARGIN,
         SCENE_MARGIN,
@@ -70,12 +69,12 @@ function create_scene_background(svg) {
     scene.setAttribute('fill', SCENE_COLOR);
 }
 
-function load_critters(parent_id) {
-    var parent  = document.getElementById(parent_id);
+function loadCritters(parentID) {
+    var parent  = document.getElementById(parentID);
     var svg     = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     
     svg.setAttribute('viewBox', '0 0 ' + SCENE_WIDTH + ' ' + SCENE_HEIGHT);
     parent.appendChild(svg);
     
-    create_scene_background(svg)
+    createWindow(svg)
 }
