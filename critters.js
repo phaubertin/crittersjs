@@ -27,6 +27,12 @@
 
 const SCENE_WIDTH  = 800
 const SCENE_HEIGHT = 500
+const SCENE_BORDER = 10
+const SCENE_MARGIN = 20
+
+const BACKGROUND_COLOR = 'black'
+const BORDER_COLOR = '#c8c8c8'
+const SCENE_COLOR = '#202020'
 
 
 function create_rectangle(svg, x, y, w, h) {
@@ -45,7 +51,23 @@ function create_rectangle(svg, x, y, w, h) {
 
 function create_scene_background(svg) {
     var background = create_rectangle(svg, 0, 0, SCENE_WIDTH, SCENE_HEIGHT);
-    background.setAttribute('fill','b');
+    background.setAttribute('fill', BACKGROUND_COLOR);
+    
+    var border = create_rectangle(
+        svg,
+        SCENE_BORDER,
+        SCENE_BORDER,
+        SCENE_WIDTH - 2 * SCENE_BORDER,
+        SCENE_HEIGHT - 2 * SCENE_BORDER);
+    border.setAttribute('stroke', BORDER_COLOR);
+    
+    var scene = create_rectangle(
+        svg,
+        SCENE_MARGIN,
+        SCENE_MARGIN,
+        SCENE_WIDTH - 2 * SCENE_MARGIN,
+        SCENE_HEIGHT - 2 * SCENE_MARGIN);
+    scene.setAttribute('fill', SCENE_COLOR);
 }
 
 function load_critters(parent_id) {
