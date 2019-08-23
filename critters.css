@@ -37,11 +37,11 @@ a {
   color: black;
 }
 
-div, p, article, figure, table, td, tr {
+div, p, article, figure, table, td, tr, svg {
     margin: 0px;
 }
 
-div, article {
+div, article, svg {
     padding: 0px;
 }
 
@@ -66,5 +66,5 @@ h2, h3, h4, h5, h6 {
 .wrapper>div {
     min-width: 600px;
     max-width: 1200px;
-    margin: 0px auto;
+    margin: 10px auto;
 }
