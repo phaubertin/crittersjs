@@ -39,6 +39,19 @@ function svgRectangle(svg, x, y, w, h) {
     return rect
 }
 
+function svgCircle(svg, cx, cy, r) {
+    var svgNS = svg.namespaceURI;
+    var circle = document.createElementNS(svgNS,'circle');
+    
+    circle.setAttribute('cx', cx);
+    circle.setAttribute('cy', cy);
+    circle.setAttribute('r', r);
+    
+    svg.appendChild(circle);
+    
+    return circle
+}
+
 function createWindow(svg) {
     var background = svgRectangle(svg, 0, 0, SCENE_WIDTH, SCENE_HEIGHT);
     background.setAttribute('fill', BACKGROUND_COLOR);
@@ -68,4 +81,15 @@ function loadCritters(parentID) {
     parent.appendChild(svg);
     
     createWindow(svg)
+    
+    food1 = createFood(svg);
+    food2 = createFood(svg);
+    food3 = createFood(svg);
+    
+    window.setInterval(
+        function(){
+            food1.updatePosition(0.05);
+            food2.updatePosition(0.05);
+            food3.updatePosition(0.05);
+        }, 50);
 }
