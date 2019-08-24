@@ -25,16 +25,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function createScene() {
+function createScene(w, h) {
     const millisPerSecond = 1000;
     var things = new Array(NUM_FOOD + NUM_DANGER)
     
     for(var idx = 0; idx < things.length; ++idx) {
         if(idx < NUM_FOOD) {
-            things[idx] = createFood()
+            things[idx] = createFood(w, h)
         }
         else {
-            things[idx] = createDanger()
+            things[idx] = createDanger(w, h)
         }
     }
     

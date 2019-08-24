@@ -90,11 +90,8 @@ function createBoing(speed, w, h) {
     }
 }
 
-function createFood() {
-    var boing = createBoing(
-        FOOD_SPEED,
-        SCENE_WIDTH  - 2 * SCENE_MARGIN,
-        SCENE_HEIGHT - 2 * SCENE_MARGIN);
+function createFood(w, h) {
+    var boing = createBoing(FOOD_SPEED, w, h);
         
     return {
         updatePosition : function(timeDelta) {
@@ -113,15 +110,12 @@ function createFood() {
     }
 }
 
-function createDanger() {
+function createDanger(w, h) {
+    var boing = createBoing(DANGER_SPEED, w, h);
+    
     function getTransform(x, y) {
         return 'translate(' + x + ',' + y + ') rotate(45)'
     }
-    
-    var boing = createBoing(
-        DANGER_SPEED,
-        SCENE_WIDTH  - 2 * SCENE_MARGIN,
-        SCENE_HEIGHT - 2 * SCENE_MARGIN);
         
     return {
         updatePosition : function(timeDelta) {
