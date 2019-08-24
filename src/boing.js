@@ -107,3 +107,33 @@ function createFood(svg) {
         }
     }
 }
+
+function createDanger(svg) {
+    function getTransform(x, y) {
+        return 'translate(' + x + ',' + y + ') rotate(45)'
+    }
+    
+    var boing = createBoing(
+        DANGER_SPEED,
+        SCENE_WIDTH  - 2 * SCENE_MARGIN,
+        SCENE_HEIGHT - 2 * SCENE_MARGIN);
+    
+    var rect = svgRectangle(
+        svg, boing.x,
+        boing.y,
+        DANGER_SIZE * Math.SQRT1_2,
+        DANGER_SIZE * Math.SQRT1_2);
+        
+    rect.setAttribute('fill', DANGER_COLOR);
+    rect.setAttribute('x', 0 - DANGER_SIZE / 2);
+    rect.setAttribute('y', 0 - DANGER_SIZE / 2);
+        
+    return {
+        updatePosition : function(timeDelta) {
+            boing.updatePosition(timeDelta)
+            rect.setAttribute('transform', getTransform(
+                boing.x + SCENE_MARGIN,
+                boing.y + SCENE_MARGIN));
+        }
+    }
+}

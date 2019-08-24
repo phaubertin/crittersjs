@@ -25,32 +25,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-const SCENE_WIDTH  = 800
-
-const SCENE_HEIGHT = 500
-
-const SCENE_BORDER = 10
-
-const SCENE_MARGIN = 20
-
-const BACKGROUND_COLOR = 'black'
-
-const BORDER_COLOR = 'rgb(200, 200, 200)'
-
-const SCENE_COLOR = 'rgb(32, 32, 32)'
-
-const NUM_FOOD = 4
-
-const FOOD_COLOR = 'rgb(0, 200, 0)'
-
-const FOOD_SPEED = 10.0
-
-const FOOD_SIZE = 6.0
-
-const NUM_DANGER = 2
-
-const DANGER_COLOR = 'rgb(200, 0, 0)'
-
-const DANGER_SPEED = 40.0
-
-const DANGER_SIZE = 16.0
+function createScene(svg) {
+    const millisPerSecond = 1000;
+    var things = new Array(NUM_FOOD + NUM_DANGER)
+    
+    for(var idx = 0; idx < things.length; ++idx) {
+        if(idx < NUM_FOOD) {
+            things[idx] = createFood(svg)
+        }
+        else {
+            things[idx] = createDanger(svg)
+        }
+    }
+    
+    return {
+        lastUpdate : performance.now(),
+        
+        updateScene : function() {
+            var now = performance.now()
+            
+            this.updatePosition((now - this.lastUpdate) / millisPerSecond)
+            
+            this.lastUpdate = performance.now()
+        },
+        
+        updatePosition : function(timeDelta) {
+            for(const thing of things) {
+                thing.updatePosition(timeDelta)
+            }
+        }
+    }
+}

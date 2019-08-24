@@ -82,14 +82,10 @@ function loadCritters(parentID) {
     
     createWindow(svg)
     
-    food1 = createFood(svg);
-    food2 = createFood(svg);
-    food3 = createFood(svg);
+    scene = createScene(svg)
     
     window.setInterval(
-        function(){
-            food1.updatePosition(0.05);
-            food2.updatePosition(0.05);
-            food3.updatePosition(0.05);
+        function() {
+            scene.updateScene();
         }, 50);
 }
