@@ -25,16 +25,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function createScene(svg) {
+function createScene() {
     const millisPerSecond = 1000;
     var things = new Array(NUM_FOOD + NUM_DANGER)
     
     for(var idx = 0; idx < things.length; ++idx) {
         if(idx < NUM_FOOD) {
-            things[idx] = createFood(svg)
+            things[idx] = createFood()
         }
         else {
-            things[idx] = createDanger(svg)
+            things[idx] = createDanger()
         }
     }
     
@@ -52,6 +52,18 @@ function createScene(svg) {
         updatePosition : function(timeDelta) {
             for(const thing of things) {
                 thing.updatePosition(timeDelta)
+            }
+        },
+        
+        createSvg : function (svg) {
+            for(const thing of things) {
+                thing.createSvg(svg)
+            }
+        },
+        
+        renderSvg: function(offsetX, offsetY) {
+            for(const thing of things) {
+                thing.renderSvg(offsetX, offsetY)
             }
         }
     }

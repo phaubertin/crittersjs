@@ -90,25 +90,30 @@ function createBoing(speed, w, h) {
     }
 }
 
-function createFood(svg) {
+function createFood() {
     var boing = createBoing(
         FOOD_SPEED,
         SCENE_WIDTH  - 2 * SCENE_MARGIN,
         SCENE_HEIGHT - 2 * SCENE_MARGIN);
-    
-    var circle = svgCircle(svg, boing.x, boing.y, FOOD_SIZE);
-    circle.setAttribute('fill', FOOD_COLOR);
         
     return {
         updatePosition : function(timeDelta) {
             boing.updatePosition(timeDelta)
-            circle.setAttribute('cx', boing.x + SCENE_MARGIN);
-            circle.setAttribute('cy', boing.y + SCENE_MARGIN);
+        },
+        
+        createSvg : function (svg) {
+            this.circle = svgCircle(svg, boing.x, boing.y, FOOD_SIZE);
+            this.circle.setAttribute('fill', FOOD_COLOR);
+        },
+        
+        renderSvg : function(offsetX, offsetY) {
+            this.circle.setAttribute('cx', boing.x + offsetX);
+            this.circle.setAttribute('cy', boing.y + offsetY);
         }
     }
 }
 
-function createDanger(svg) {
+function createDanger() {
     function getTransform(x, y) {
         return 'translate(' + x + ',' + y + ') rotate(45)'
     }
@@ -117,23 +122,28 @@ function createDanger(svg) {
         DANGER_SPEED,
         SCENE_WIDTH  - 2 * SCENE_MARGIN,
         SCENE_HEIGHT - 2 * SCENE_MARGIN);
-    
-    var rect = svgRectangle(
-        svg, boing.x,
-        boing.y,
-        DANGER_SIZE * Math.SQRT1_2,
-        DANGER_SIZE * Math.SQRT1_2);
-        
-    rect.setAttribute('fill', DANGER_COLOR);
-    rect.setAttribute('x', 0 - DANGER_SIZE / 2);
-    rect.setAttribute('y', 0 - DANGER_SIZE / 2);
         
     return {
         updatePosition : function(timeDelta) {
             boing.updatePosition(timeDelta)
-            rect.setAttribute('transform', getTransform(
-                boing.x + SCENE_MARGIN,
-                boing.y + SCENE_MARGIN));
+        },
+        
+        createSvg : function (svg) {
+            this.rect = svgRectangle(
+                svg, boing.x,
+                boing.y,
+                DANGER_SIZE * Math.SQRT1_2,
+                DANGER_SIZE * Math.SQRT1_2);
+                
+            this.rect.setAttribute('fill', DANGER_COLOR);
+            this.rect.setAttribute('x', 0 - DANGER_SIZE / 2);
+            this.rect.setAttribute('y', 0 - DANGER_SIZE / 2);
+        },
+        
+        renderSvg: function(offsetX, offsetY) {
+            this.rect.setAttribute('transform', getTransform(
+                boing.x + offsetX,
+                boing.y + offsetY));
         }
     }
 }

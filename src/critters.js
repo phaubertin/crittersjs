@@ -82,10 +82,12 @@ function loadCritters(parentID) {
     
     createWindow(svg)
     
-    scene = createScene(svg)
+    scene = createScene()
+    scene.createSvg(svg)
     
     window.setInterval(
         function() {
             scene.updateScene();
+            scene.renderSvg(SCENE_MARGIN, SCENE_MARGIN);
         }, 50);
 }
