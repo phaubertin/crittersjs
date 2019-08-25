@@ -24,6 +24,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+ 
+const BACKGROUND_WIDTH = SCENE_WIDTH + 2 * SCENE_MARGIN;
+ 
+const BACKGROUND_HEIGHT = SCENE_HEIGHT + 2 * SCENE_MARGIN;
 
 function svgRectangle(svg, x, y, w, h) {
     var svgNS = svg.namespaceURI;
@@ -52,46 +56,65 @@ function svgCircle(svg, cx, cy, r) {
     return circle
 }
 
-function createWindow(svg) {
-    var background = svgRectangle(svg, 0, 0, SCENE_WIDTH, SCENE_HEIGHT);
+/*  +--------------------------------------------------------------------------+
+ *  |//////////////////////////////////////////////////////////////////////////|
+ *  |//+--------------------------------------------------------------------+//|
+ *  |//|////////////////////////////////////////////////////////////////////|//|
+ *  |//|//+--------------------------------------------------------------+//|//|
+ *  |//|//|                                                              |//|//|
+ *  |//|//|                           Scene                              |//|//|
+ *  |//|//|                                                              |//|//|
+ *  |//|//+--------------------------------------------------------------+//|//|
+ *  |//|/////////////////////////////////////////////////Border/////////////|//|
+ *  |//+--------------------------------------------------------------------+//|
+ *  |////////////////////////////////////////////////////Background////////////|
+ *  +--------------------------------------------------------------------------+
+ * 
+ * */
+
+function createBackground(svg) {
+    var background = svgRectangle(svg, 0, 0, BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
     background.setAttribute('fill', BACKGROUND_COLOR);
     
     var border = svgRectangle(
         svg,
         SCENE_BORDER,
         SCENE_BORDER,
-        SCENE_WIDTH - 2 * SCENE_BORDER,
-        SCENE_HEIGHT - 2 * SCENE_BORDER);
+        SCENE_WIDTH + 2 * SCENE_BORDER,
+        SCENE_HEIGHT + 2 * SCENE_BORDER);
     border.setAttribute('stroke', BORDER_COLOR);
     
     var scene = svgRectangle(
         svg,
         SCENE_MARGIN,
         SCENE_MARGIN,
-        SCENE_WIDTH - 2 * SCENE_MARGIN,
-        SCENE_HEIGHT - 2 * SCENE_MARGIN);
+        SCENE_WIDTH,
+        SCENE_HEIGHT);
     scene.setAttribute('fill', SCENE_COLOR);
+}
+
+function setViewbox(svg) {
+    svg.setAttribute('viewBox', '0 0 ' + BACKGROUND_WIDTH + ' ' + BACKGROUND_HEIGHT);
+}
+
+function createSceneCritters(scene) {
+    for(var idx = 0; idx < NUM_CRITTERS; ++idx) {
+        scene.addCritter(
+            createCritter(SCENE_WIDTH, SCENE_HEIGHT));
+    }
 }
 
 function loadCritters(parentID) {
     var parent  = document.getElementById(parentID);
     var svg     = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    
-    svg.setAttribute('viewBox', '0 0 ' + SCENE_WIDTH + ' ' + SCENE_HEIGHT);
+    setViewbox(svg)
     parent.appendChild(svg);
     
-    createWindow(svg)
+    createBackground(svg)
+    scene = createScene(SCENE_WIDTH, SCENE_HEIGHT);
     
-    const sceneWidth = SCENE_WIDTH - 2 * SCENE_MARGIN;
-    const sceneHeight = SCENE_HEIGHT - 2 * SCENE_MARGIN;
-    
-    scene = createScene(sceneWidth, sceneHeight);
+    createSceneCritters(scene)
         
-    for(var idx = 0; idx < NUM_CRITTERS; ++idx) {
-        scene.addCritter(
-            createCritter(sceneWidth, sceneHeight));
-    }
-    
     scene.createSvg(svg)
     
     window.setInterval(
