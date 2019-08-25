@@ -82,9 +82,16 @@ function loadCritters(parentID) {
     
     createWindow(svg)
     
-    scene = createScene(
-        SCENE_WIDTH - 2 * SCENE_MARGIN,
-        SCENE_HEIGHT - 2 * SCENE_MARGIN);
+    const sceneWidth = SCENE_WIDTH - 2 * SCENE_MARGIN;
+    const sceneHeight = SCENE_HEIGHT - 2 * SCENE_MARGIN;
+    
+    scene = createScene(sceneWidth, sceneHeight);
+        
+    for(var idx = 0; idx < NUM_CRITTERS; ++idx) {
+        scene.addCritter(
+            createCritter(sceneWidth, sceneHeight));
+    }
+    
     scene.createSvg(svg)
     
     window.setInterval(

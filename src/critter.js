@@ -25,38 +25,55 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-const SCENE_WIDTH  = 800
-
-const SCENE_HEIGHT = 500
-
-const SCENE_BORDER = 10
-
-const SCENE_MARGIN = 20
-
-const BACKGROUND_COLOR = 'black'
-
-const BORDER_COLOR = 'rgb(200, 200, 200)'
-
-const SCENE_COLOR = 'rgb(32, 32, 32)'
-
-const NUM_FOOD = 4
-
-const FOOD_COLOR = 'rgb(0, 200, 0)'
-
-const FOOD_SPEED = 10.0
-
-const FOOD_SIZE = 6.0
-
-const NUM_DANGER = 2
-
-const DANGER_COLOR = 'rgb(200, 0, 0)'
-
-const DANGER_SPEED = 40.0
-
-const DANGER_SIZE = 16.0
-
-const NUM_CRITTERS = 5
-
-const CRITTER_COLOR = 'rgb(100, 100, 200)'
-
-const CRITTER_SIZE = 10.0
+function createCritter(w, h) {
+    function getTransform(x, y, angle) {
+        var degAngle = angle * 180 / Math.PI;
+        return 'translate(' + x + ',' + y + ') rotate(' + degAngle + ')'
+    }
+    
+    return {
+        x : w * Math.random(),
+        
+        y : h * Math.random(),
+        
+        angle : 2.0 * Math.PI * Math.random(),
+        
+        updatePosition : function(timeDelta) {/* TODO */},
+        
+        createSvg : function(svg) {
+            this.body = svgCircle(
+                svg,
+                0 - 0.3 * CRITTER_SIZE,
+                0,
+                0.7 * CRITTER_SIZE);
+            
+            this.head = svgCircle(
+                svg,
+                0.6 * CRITTER_SIZE,
+                0,
+                0.4 * CRITTER_SIZE);
+            
+            this.body.setAttribute('fill', CRITTER_COLOR);
+            this.head.setAttribute('fill', CRITTER_COLOR);
+        },
+        
+        renderSvg: function(offsetX, offsetY) {
+            this.body.setAttribute('transform', getTransform(
+                this.x + offsetX,
+                this.y + offsetY,
+                this.angle));
+            this.head.setAttribute('transform', getTransform(
+                this.x + offsetX,
+                this.y + offsetY,
+                this.angle));
+        },
+        
+        getX : function() {
+            return boing.x
+        },
+        
+        getY : function() {
+            return boing.y
+        }
+    }
+}

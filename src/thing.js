@@ -90,6 +90,11 @@ function createBoing(speed, w, h) {
     }
 }
 
+const thingKind = {
+    FOOD : 1,
+    DANGER : 2
+}
+
 function createFood(w, h) {
     var boing = createBoing(FOOD_SPEED, w, h);
         
@@ -106,6 +111,18 @@ function createFood(w, h) {
         renderSvg : function(offsetX, offsetY) {
             this.circle.setAttribute('cx', boing.x + offsetX);
             this.circle.setAttribute('cy', boing.y + offsetY);
+        },
+        
+        getKind : function() {
+            return thingKind.FOOD
+        },
+        
+        getX : function() {
+            return boing.x
+        },
+        
+        getY : function() {
+            return boing.y
         }
     }
 }
@@ -124,20 +141,31 @@ function createDanger(w, h) {
         
         createSvg : function (svg) {
             this.rect = svgRectangle(
-                svg, boing.x,
-                boing.y,
+                svg,
+                0 - DANGER_SIZE / 2,
+                0 - DANGER_SIZE / 2,
                 DANGER_SIZE * Math.SQRT1_2,
                 DANGER_SIZE * Math.SQRT1_2);
                 
             this.rect.setAttribute('fill', DANGER_COLOR);
-            this.rect.setAttribute('x', 0 - DANGER_SIZE / 2);
-            this.rect.setAttribute('y', 0 - DANGER_SIZE / 2);
         },
         
         renderSvg: function(offsetX, offsetY) {
             this.rect.setAttribute('transform', getTransform(
                 boing.x + offsetX,
                 boing.y + offsetY));
+        },
+        
+        getKind : function() {
+            return thingKind.FOOD
+        },
+        
+        getX : function() {
+            return boing.x
+        },
+        
+        getY : function() {
+            return boing.y
         }
     }
 }

@@ -28,6 +28,7 @@
 function createScene(w, h) {
     const millisPerSecond = 1000;
     var things = new Array(NUM_FOOD + NUM_DANGER)
+    var critters = [];
     
     for(var idx = 0; idx < things.length; ++idx) {
         if(idx < NUM_FOOD) {
@@ -41,12 +42,20 @@ function createScene(w, h) {
     return {
         lastUpdate : performance.now(),
         
+        addCritter : function(critter) {
+            critters.push(critter);            
+        },
+        
+        harvestCritter : function() {
+            return critters.shift();
+        },
+        
         updateScene : function() {
-            var now = performance.now()
+            var now = performance.now();
             
-            this.updatePosition((now - this.lastUpdate) / millisPerSecond)
+            this.updatePosition((now - this.lastUpdate) / millisPerSecond);
             
-            this.lastUpdate = performance.now()
+            this.lastUpdate = performance.now();
         },
         
         updatePosition : function(timeDelta) {
@@ -57,13 +66,19 @@ function createScene(w, h) {
         
         createSvg : function (svg) {
             for(const thing of things) {
-                thing.createSvg(svg)
+                thing.createSvg(svg);
+            }
+            for(const critter of critters) {
+                critter.createSvg(svg);
             }
         },
         
         renderSvg: function(offsetX, offsetY) {
             for(const thing of things) {
-                thing.renderSvg(offsetX, offsetY)
+                thing.renderSvg(offsetX, offsetY);
+            }
+            for(const critter of critters) {
+                critter.renderSvg(offsetX, offsetY);
             }
         }
     }
