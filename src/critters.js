@@ -97,13 +97,6 @@ function setViewbox(svg) {
     svg.setAttribute('viewBox', '0 0 ' + BACKGROUND_WIDTH + ' ' + BACKGROUND_HEIGHT);
 }
 
-function createSceneCritters(scene) {
-    for(var idx = 0; idx < NUM_CRITTERS; ++idx) {
-        scene.addCritter(
-            createCritter(SCENE_WIDTH, SCENE_HEIGHT));
-    }
-}
-
 function loadCritters(parentID) {
     var parent  = document.getElementById(parentID);
     var svg     = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -111,9 +104,7 @@ function loadCritters(parentID) {
     parent.appendChild(svg);
     
     createBackground(svg)
-    scene = createScene(SCENE_WIDTH, SCENE_HEIGHT);
-    
-    createSceneCritters(scene)
+    scene = createScene(SCENE_WIDTH, SCENE_HEIGHT, true);
         
     scene.createSvg(svg)
     

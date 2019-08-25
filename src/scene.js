@@ -25,17 +25,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function createScene(w, h) {
+function createScene(w, h, doCreateCritters) {
     const millisPerSecond = 1000;
-    var things = new Array(NUM_FOOD + NUM_DANGER)
+    var things = [];
     var critters = [];
     
-    for(var idx = 0; idx < things.length; ++idx) {
-        if(idx < NUM_FOOD) {
-            things[idx] = createFood(w, h)
-        }
-        else {
-            things[idx] = createDanger(w, h)
+    for(var idx = 0; idx < NUM_FOOD; ++idx) {
+        things.push(createFood(w, h))
+    }
+    
+    for(var idx = 0; idx < NUM_DANGER; ++idx) {
+        things.push(createDanger(w, h))
+    }
+    
+    /* For the displayed scene, critters are created when the scene is created.
+     * For simulation scenes used for training, critters are added to the scene,
+     * trained, then taken out and other critters are added to take their place,
+     * etc. */
+    if(doCreateCritters) {
+        for(var idx = 0; idx < NUM_CRITTERS; ++idx) {
+            critters.push(createCritter(w, h))
         }
     }
     
@@ -43,7 +52,7 @@ function createScene(w, h) {
         lastUpdate : performance.now(),
         
         addCritter : function(critter) {
-            critters.push(critter);            
+            critters.push(critter);
         },
         
         harvestCritter : function() {
