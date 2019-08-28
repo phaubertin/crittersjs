@@ -112,5 +112,5 @@ function loadCritters(parentID) {
         function() {
             scene.updateScene();
             scene.renderSvg(SCENE_MARGIN, SCENE_MARGIN);
-        }, 50);
+        }, 20);
 }

@@ -60,3 +60,15 @@ const NUM_CRITTERS = 5
 const CRITTER_COLOR = 'rgb(100, 100, 200)'
 
 const CRITTER_SIZE = 10.0
+
+const VISION_DISTANCE_LIMIT = 600.0
+
+const VISION_ANGLE_LIMIT = 0.7 * Math.PI / 2
+
+const SCENT_DISTANCE_LIMIT = 250.0
+
+/* In viewbox pixels per second */
+const BASE_SPEED_FORWARD = 100.0
+
+/* In radian per second */
+const BASE_SPEED_ANGULAR = 0.2 * Math.PI

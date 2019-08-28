@@ -86,6 +86,11 @@ function createBoing(speed, w, h) {
                 this.y = 0;
                 this.goDown = true;
             }
+        },
+        
+        setPosition : function(x, y) {
+            this.x = x;
+            this.y = y;
         }
     }
 }
@@ -123,6 +128,10 @@ function createFood(w, h) {
         
         getY : function() {
             return boing.y
+        },
+        
+        setPosition : function(x, y) {
+            boing.setPosition(x, y)
         }
     }
 }
@@ -157,7 +166,7 @@ function createDanger(w, h) {
         },
         
         getKind : function() {
-            return thingKind.FOOD
+            return thingKind.DANGER
         },
         
         getX : function() {
@@ -166,6 +175,10 @@ function createDanger(w, h) {
         
         getY : function() {
             return boing.y
+        },
+        
+        setPosition : function(x, y) {
+            boing.setPosition(x, y)
         }
     }
 }

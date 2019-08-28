@@ -27,18 +27,76 @@
 
 function createCritter(w, h) {
     function getTransform(x, y, angle) {
-        var degAngle = angle * 180 / Math.PI;
+        var degAngle = -angle * 180 / Math.PI;
         return 'translate(' + x + ',' + y + ') rotate(' + degAngle + ')'
     }
+    
+    const genome = createGenome()
     
     return {
         x : w * Math.random(),
         
         y : h * Math.random(),
         
-        angle : 2.0 * Math.PI * Math.random(),
+        /* Range: -pi..pi */
+        angle : 2.0 * Math.PI * (Math.random() - 0.5),
         
-        updatePosition : function(timeDelta) {/* TODO */},
+        brainControl : {
+            leftSpeed : 0.0,
+            rightSpeed : 0.0
+        },
+        
+        foodCount : 0,
+        
+        dangerCount : 0,
+        
+        updatePosition : function(timeDelta) {
+            /* Update position. */
+            
+            let speed = BASE_SPEED_FORWARD * (
+                /* Arithmetic mean */
+                this.brainControl.rightSpeed + this.brainControl.leftSpeed) * 0.5;
+            
+            let distance = timeDelta * speed;
+            let x = this.x + Math.cos(this.angle) * distance;
+            let y = this.y - Math.sin(this.angle) * distance;
+
+            if(x < 0.0) {
+                x = 0.0;
+            }
+            else if(x >= w) {
+                x = w - 1;
+            }
+            
+            if(y < 0.0) {
+                y = 0.0;
+            }
+            else if(y >= h) {
+                y = h - 1;
+            }
+            
+            this.setPosition(x, y);
+            
+            /* Update angle. */
+            
+            let omega = BASE_SPEED_ANGULAR * (
+                this.brainControl.rightSpeed - this.brainControl.leftSpeed);
+            let deltaAngle = timeDelta * omega;
+            
+            this.angle += deltaAngle;
+                
+            while(this.angle < -Math.PI) {
+                this.angle += 2 * Math.PI;
+            }
+            
+            while(this.angle > Math.PI) {
+                this.angle -= 2 * Math.PI;
+            }
+        },
+        
+        updateBrainControl : function(stimuli) {
+            this.brainControl = computeBrainControl(genome, stimuli);
+        },
         
         createSvg : function(svg) {
             this.body = svgCircle(
@@ -66,14 +124,24 @@ function createCritter(w, h) {
                 this.x + offsetX,
                 this.y + offsetY,
                 this.angle));
+            this.head.setAttribute('fill', genome.color);
         },
         
         getX : function() {
-            return boing.x
+            return this.x;
         },
         
         getY : function() {
-            return boing.y
+            return this.y;
+        },
+        
+        getAngle() {
+            return this.angle;
+        },
+        
+        setPosition : function(x, y) {
+            this.x = x;
+            this.y = y;
         }
     }
 }
