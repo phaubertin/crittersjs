@@ -29,6 +29,10 @@ closure/README.md
 closure/COPYING
 closure/*.jar
 
+# Downloaded Google Closure Compiler distribution.
+closure/compiler-*.tar.gz
+closure/compiler-*.zip
+
 # The target/ directory contains the files produced by the build process.
 target/*
 !target/README
