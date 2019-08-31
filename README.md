@@ -54,4 +54,22 @@ files are placed in the **target/** directory.
 Run Instructions
 ------------------
 
-Open the **target/index.html** file in your web browser.
+If you are using a web browser other than Google Chrome, running the application
+is probably as simple as opening the **target/index.html** file in your browser.
+
+The issue with running this application in Chrome is that it does not allow
+running a web worker from a local file. A possible workaround is to start
+Chrome with the ``--allow-file-access-from-files`` argument. The ``run-with-chrome``
+bash script at the top of the repository does this for you. For this workaround
+to work, all Chrome windows have to be closed beforehand.
+
+Alternatively, the application can be served with any HTTP server so the
+web worker's code is no longer a local file. For example, if you have Python 3
+installed, simply change into the **target** directory and start the built in
+HTTP server, then point your web browser to ``localhost:8000``.
+```
+cd target
+python -m http.server
+```
+
+More detail and other possible workarounds can be found in [this Stack Overflow question](https://stackoverflow.com/questions/21408510/chrome-cant-load-web-worker).
