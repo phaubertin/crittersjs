@@ -68,3 +68,19 @@ h2, h3, h4, h5, h6 {
     max-width: 1200px;
     margin: 10px auto;
 }
+
+#critter-log {
+    background-color: rgb(220, 220, 220);
+}
+
+#critter-log p {
+    font-family : monospace;
+}
+
+#critter-log p .origin {
+    font-weight: bold;
+    color: rgb(0, 0, 150);
+}
+#critter-log p .origin:after {
+    content: ": ";
+}

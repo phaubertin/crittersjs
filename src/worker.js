@@ -150,16 +150,20 @@
 
 startWorker();
 
+function logStatus(status) {
+    self.postMessage(
+        createMessage(messageType.LOG_STATUS, status));
+}
+
 function startWorker() {
     let genomes = [];
     
-    console.log("Worker is alive!");
+    logStatus("Worker is alive!");
     
     for(let idx = 0; idx < NUM_CRITTERS; ++idx) {
         genomes.push(createGenome());
     }
     
-    console.log("Sending message.");
-    self.postMessage(createMessage(MESSAGE_TYPE_GENOME, genomes));
-    console.log("Message sent.");
+    self.postMessage(
+        createMessage(messageType.GENOME_UPDATE, genomes));
 }

@@ -24,12 +24,19 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-const MESSAGE_TYPE_GENOME = 1;
+ 
+const messageType = {
+    GENOME_UPDATE : 1,
+    LOG_STATUS : 2
+}
 
 function createMessage(type, data) {
     return {
         type : type,
         data : JSON.stringify(data)
     }
+}
+
+function getMessagePayload(message) {
+    return JSON.parse(message.data);
 }

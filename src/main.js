@@ -29,6 +29,8 @@ const BACKGROUND_WIDTH = SCENE_WIDTH + 2 * SCENE_MARGIN;
  
 const BACKGROUND_HEIGHT = SCENE_HEIGHT + 2 * SCENE_MARGIN;
 
+var logParent;
+
 function svgRectangle(svg, x, y, w, h) {
     var svgNS = svg.namespaceURI;
     var rect = document.createElementNS(svgNS,'rect');
@@ -97,10 +99,29 @@ function setViewbox(svg) {
     svg.setAttribute('viewBox', '0 0 ' + BACKGROUND_WIDTH + ' ' + BACKGROUND_HEIGHT);
 }
 
+function logStatus(origin, status) {
+    console.log(origin + ': ' + status);
+    
+    let span = document.createElement('span');
+    span.appendChild(document.createTextNode(origin));
+    span.className = 'origin'
+    
+    let p = document.createElement('p');
+    p.appendChild(span);
+    p.appendChild(document.createTextNode(status));
+    
+    /* The logParent variable is global. */
+    logParent.appendChild(p);
+}
+
+function logMain(status) {
+    logStatus('main', status);
+}
+
 function updateSceneCritters(scene, genomes) {
     var idx = 0;
     
-    console.log("Updating scene.");
+    logMain("Updating scene.");
     
     for(genome of genomes) {
         if(idx < scene.critters.length) {
@@ -115,14 +136,14 @@ function updateSceneCritters(scene, genomes) {
 
 function handleWorkerMessage(scene, e) {
     let message = e.data;
-    let payload = JSON.parse(message.data)
-    
-    console.log("Received message.");
+    let payload = getMessagePayload(message);
     
     switch(message.type) {
-    case MESSAGE_TYPE_GENOME:
-        console.log("This is a genome message.");
+    case messageType.GENOME_UPDATE:
         updateSceneCritters(scene, payload);
+        break;
+    case messageType.LOG_STATUS:
+        logStatus('worker', payload);
         break;
     default:
         console.warn("Unhandled message type: " + message.type);
@@ -130,7 +151,7 @@ function handleWorkerMessage(scene, e) {
 }
 
 function createWorker(scene) {
-    console.log("Starting worker.");
+    logMain("Starting worker.");
     
     var worker = new Worker('critters-worker.js');
     
@@ -139,11 +160,14 @@ function createWorker(scene) {
     }
 }
 
-function loadCritters(parentID) {
-    var parent  = document.getElementById(parentID);
-    var svg     = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+function loadCritters(renderID, logID) {
+    var renderParent    = document.getElementById(renderID);
+    var svg             = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     setViewbox(svg)
-    parent.appendChild(svg);
+    renderParent.appendChild(svg);
+    
+    /* This variable is global. */
+    logParent = document.getElementById(logID);
     
     createBackground(svg);
     scene = createScene(SCENE_WIDTH, SCENE_HEIGHT, true);
