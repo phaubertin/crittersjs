@@ -28,9 +28,21 @@ MAIN_SOURCES = \
 	brain.js \
 	config.js \
 	critter.js \
+	genome.js \
 	main.js \
+	message.js \
 	scene.js \
 	thing.js
+
+WORKER_SOURCES = \
+	brain.js \
+	config.js \
+	critter.js \
+	genome.js \
+	message.js \
+	scene.js \
+	thing.js \
+	worker.js
 
 COPIED_HTML = \
 	index.html \
@@ -41,7 +53,8 @@ HTML_PREFIX		= html/
 TARGET_PREFIX	= target/
 
 MAIN_TARGET		= ${TARGET_PREFIX}critters-main.js
-SOURCE_TARGETS	= ${MAIN_TARGET}
+WORKER_TARGET	= ${TARGET_PREFIX}critters-worker.js
+SOURCE_TARGETS	= ${MAIN_TARGET} ${WORKER_TARGET}
 COPIED_TARGETS	= $(addprefix ${TARGET_PREFIX},${COPIED_HTML})
 TARGETS			= ${SOURCE_TARGETS} ${COPIED_TARGETS}
 
@@ -55,7 +68,10 @@ clean:
 	-rm -f ${TARGETS}
 
 ${MAIN_TARGET}: $(addprefix ${SOURCE_PREFIX},${MAIN_SOURCES})
-	${RUN_COMPILER} --js_output_file ${MAIN_TARGET} $(addprefix --js ,$^)
+	${RUN_COMPILER} --js_output_file $@ $(addprefix --js ,$^)
+
+${WORKER_TARGET}: $(addprefix ${SOURCE_PREFIX},${WORKER_SOURCES})
+	${RUN_COMPILER} --js_output_file $@ $(addprefix --js ,$^)
 
 ${COPIED_TARGETS}: $(addprefix ${HTML_PREFIX},${COPIED_HTML})
 	cp $^ ${TARGET_PREFIX}

@@ -25,57 +25,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-const SCENE_WIDTH  = 800
+const MESSAGE_TYPE_GENOME = 1;
 
-const SCENE_HEIGHT = 500
-
-const SCENE_BORDER = 10
-
-const SCENE_MARGIN = 20
-
-const BACKGROUND_COLOR = 'black'
-
-const BORDER_COLOR = 'rgb(200, 200, 200)'
-
-const SCENE_COLOR = 'rgb(32, 32, 32)'
-
-const NUM_FOOD = 4
-
-const FOOD_COLOR = 'rgb(0, 200, 0)'
-
-const FOOD_SPEED = 10.0
-
-const FOOD_SIZE = 6.0
-
-const NUM_DANGER = 2
-
-const DANGER_COLOR = 'rgb(200, 0, 0)'
-
-const DANGER_SPEED = 40.0
-
-const DANGER_SIZE = 16.0
-
-const NUM_CRITTERS = 5
-
-const CRITTER_COLOR = 'rgb(100, 100, 200)'
-
-const CRITTER_SIZE = 10.0
-
-const VISION_DISTANCE_LIMIT = 600.0
-
-const VISION_ANGLE_LIMIT = 0.7 * Math.PI / 2
-
-const SCENT_DISTANCE_LIMIT = 250.0
-
-/* In viewbox pixels per second */
-const BASE_SPEED_FORWARD = 100.0
-
-/* In radian per second */
-const BASE_SPEED_ANGULAR = 0.2 * Math.PI
-
-/* Number of neurons with a rectifier activation function (ReLU) in the hidden layer.
- * Must be a multiple of four. */
-const GENOME_HIDDEN_RELU = 8
-
-/* All weights are between plus or minus this value. */
-const GENOME_WEIGHT_AMPLITUDE = 20.0
+function createMessage(type, data) {
+    return {
+        type : type,
+        data : JSON.stringify(data)
+    }
+}

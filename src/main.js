@@ -97,20 +97,64 @@ function setViewbox(svg) {
     svg.setAttribute('viewBox', '0 0 ' + BACKGROUND_WIDTH + ' ' + BACKGROUND_HEIGHT);
 }
 
+function updateSceneCritters(scene, genomes) {
+    var idx = 0;
+    
+    console.log("Updating scene.");
+    
+    for(genome of genomes) {
+        if(idx < scene.critters.length) {
+            scene.critters[idx].genome = genome;
+        }
+        else {
+            break;
+        }
+        ++idx;
+    }
+}
+
+function handleWorkerMessage(scene, e) {
+    let message = e.data;
+    let payload = JSON.parse(message.data)
+    
+    console.log("Received message.");
+    
+    switch(message.type) {
+    case MESSAGE_TYPE_GENOME:
+        console.log("This is a genome message.");
+        updateSceneCritters(scene, payload);
+        break;
+    default:
+        console.warn("Unhandled message type: " + message.type);
+    }
+}
+
+function createWorker(scene) {
+    console.log("Starting worker.");
+    
+    var worker = new Worker('critters-worker.js');
+    
+    worker.onmessage = function(e) {
+        handleWorkerMessage(scene, e);
+    }
+}
+
 function loadCritters(parentID) {
     var parent  = document.getElementById(parentID);
     var svg     = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     setViewbox(svg)
     parent.appendChild(svg);
     
-    createBackground(svg)
+    createBackground(svg);
     scene = createScene(SCENE_WIDTH, SCENE_HEIGHT, true);
         
-    scene.createSvg(svg)
+    scene.createSvg(svg);
     
     window.setInterval(
         function() {
             scene.updateScene();
             scene.renderSvg(SCENE_MARGIN, SCENE_MARGIN);
         }, 20);
+    
+    createWorker(scene);
 }

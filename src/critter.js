@@ -25,13 +25,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function createCritter(w, h) {
+function createCritter(w, h, genome) {
     function getTransform(x, y, angle) {
         var degAngle = -angle * 180 / Math.PI;
         return 'translate(' + x + ',' + y + ') rotate(' + degAngle + ')'
     }
-    
-    const genome = createGenome()
     
     return {
         x : w * Math.random(),
@@ -40,6 +38,8 @@ function createCritter(w, h) {
         
         /* Range: -pi..pi */
         angle : 2.0 * Math.PI * (Math.random() - 0.5),
+        
+        genome : genome,
         
         brainControl : {
             leftSpeed : 0.0,
@@ -95,7 +95,7 @@ function createCritter(w, h) {
         },
         
         updateBrainControl : function(stimuli) {
-            this.brainControl = computeBrainControl(genome, stimuli);
+            this.brainControl = computeBrainControl(this.genome, stimuli);
         },
         
         createSvg : function(svg) {
@@ -124,7 +124,7 @@ function createCritter(w, h) {
                 this.x + offsetX,
                 this.y + offsetY,
                 this.angle));
-            this.head.setAttribute('fill', genome.color);
+            this.head.setAttribute('fill', this.genome.color);
         },
         
         getX : function() {

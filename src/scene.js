@@ -44,7 +44,7 @@ function createScene(w, h, doCreateCritters) {
      * etc. */
     if(doCreateCritters) {
         for(var idx = 0; idx < NUM_CRITTERS; ++idx) {
-            critters.push(createCritter(w, h))
+            critters.push(createCritter(w, h, randomGenome()))
         }
     }
     
@@ -53,14 +53,16 @@ function createScene(w, h, doCreateCritters) {
         
         height : h,
         
+        critters : critters,
+        
         lastUpdate : performance.now(),
         
         addCritter : function(critter) {
-            critters.push(critter);
+            this.critters.push(critter);
         },
         
         harvestCritter : function() {
-            return critters.shift();
+            return this.critters.shift();
         },
         
         updateScene : function() {
@@ -76,11 +78,11 @@ function createScene(w, h, doCreateCritters) {
                 thing.updatePosition(timeDelta)
             }
             
-            for(const critter of critters) {
+            for(const critter of this.critters) {
                 critter.updatePosition(timeDelta);
             }
             
-            for(const critter of critters) {
+            for(const critter of this.critters) {
                 let stimuli = this.computeStimuli(critter);
                 
                 /* Stimuli object is null if critter died this round. */
@@ -286,7 +288,7 @@ function createScene(w, h, doCreateCritters) {
             for(const thing of things) {
                 thing.createSvg(svg);
             }
-            for(const critter of critters) {
+            for(const critter of this.critters) {
                 critter.createSvg(svg);
             }
         },
@@ -295,7 +297,7 @@ function createScene(w, h, doCreateCritters) {
             for(const thing of things) {
                 thing.renderSvg(offsetX, offsetY);
             }
-            for(const critter of critters) {
+            for(const critter of this.critters) {
                 critter.renderSvg(offsetX, offsetY);
             }
         }
