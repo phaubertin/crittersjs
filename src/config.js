@@ -79,3 +79,37 @@ const GENOME_HIDDEN_RELU = 8
 
 /* All weights are between plus or minus this value. */
 const GENOME_WEIGHT_AMPLITUDE = 20.0
+
+/* Number of genomes in a generation */
+const POPULATION_SIZE = 200
+
+/* Number of selected genomes with top fitness score */
+const BEST_KEEP = 9
+
+/* Number of randomly-selected genomes */
+const RAND_KEEP = 48
+
+/* Number of novel randomly-generated genomes */
+const RAND_NEW = 6
+
+/* Weight of top fitness score genomes (i.e. how many time each is added to the pool) */
+const BEST_PRIORITY = 4
+
+/* Number of genomes with the lowest fitness score that are discarded */
+const WORST_DISCARD = 50
+
+const SIM_TIME = 40 /* in seconds */
+
+const TIME_STEP = 200 /* in milliseconds */
+
+/* Fitness score: number of points gained each time food is captured */
+const FOOD_COST = 1.0
+
+/* Fitness score: number of points gained (negative for loss) each time the critter is captured */
+const DANGER_COST = -50.0
+
+const FIRST_UPDATE = 2.0 /* In seconds */
+
+const UPDATE_INTERVAL = 20.0 /* In seconds */
+
+const LOG_INTERVAL = 50 /* In generations */
