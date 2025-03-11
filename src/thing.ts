@@ -33,7 +33,7 @@ import {
     FOOD_SIZE,
     FOOD_SPEED,
 } from './config';
-import { SvgCanvas } from './svg';
+import { SvgCanvas, SvgShape } from './svg';
 
 function createBoing(speed, w, h) {
     var rand = Math.random();
@@ -107,20 +107,19 @@ export function createFood(w: number, h: number) {
     var boing = createBoing(FOOD_SPEED, w, h);
 
     return {
-        circle: undefined as any,
+        circle: undefined as unknown as SvgShape,
 
         updatePosition: function (timeDelta) {
             boing.updatePosition(timeDelta);
         },
 
         createSvg: function (svg: SvgCanvas) {
-            this.circle = svg.addCircle(boing.x, boing.y, FOOD_SIZE);
-            this.circle.setAttribute('fill', FOOD_COLOR);
+            this.circle = svg.addCircle(0, 0, FOOD_SIZE);
+            this.circle.setFillColor(FOOD_COLOR);
         },
 
         renderSvg: function (offsetX, offsetY) {
-            this.circle.setAttribute('cx', boing.x + offsetX);
-            this.circle.setAttribute('cy', boing.y + offsetY);
+            this.circle.setTranslate(boing.x + offsetX, boing.y + offsetY);
         },
 
         getKind: function () {
@@ -144,12 +143,8 @@ export function createFood(w: number, h: number) {
 export function createDanger(w, h) {
     var boing = createBoing(DANGER_SPEED, w, h);
 
-    function getTransform(x, y) {
-        return 'translate(' + x + ',' + y + ') rotate(45)';
-    }
-
     return {
-        rect: undefined as unknown as Element,
+        rect: undefined as unknown as SvgShape,
 
         updatePosition: function (timeDelta) {
             boing.updatePosition(timeDelta);
@@ -162,12 +157,12 @@ export function createDanger(w, h) {
                 DANGER_SIZE * Math.SQRT1_2,
                 DANGER_SIZE * Math.SQRT1_2,
             );
-
-            this.rect.setAttribute('fill', DANGER_COLOR);
+            this.rect.setFillColor(DANGER_COLOR);
+            this.rect.setRotate(45);
         },
 
         renderSvg: function (offsetX, offsetY) {
-            this.rect.setAttribute('transform', getTransform(boing.x + offsetX, boing.y + offsetY));
+            this.rect.setTranslate(boing.x + offsetX, boing.y + offsetY);
         },
 
         getKind: function () {

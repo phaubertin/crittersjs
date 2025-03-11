@@ -62,7 +62,7 @@ var logParent;
 
 function createBackground(svg: SvgCanvas) {
     const background = svg.addRectangle(0, 0, BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
-    background.setAttribute('fill', BACKGROUND_COLOR);
+    background.setFillColor(BACKGROUND_COLOR);
 
     const border = svg.addRectangle(
         SCENE_BORDER,
@@ -70,10 +70,10 @@ function createBackground(svg: SvgCanvas) {
         SCENE_WIDTH + 2 * SCENE_BORDER,
         SCENE_HEIGHT + 2 * SCENE_BORDER,
     );
-    border.setAttribute('stroke', BORDER_COLOR);
+    border.setStrokeColor(BORDER_COLOR);
 
     const scene = svg.addRectangle(SCENE_MARGIN, SCENE_MARGIN, SCENE_WIDTH, SCENE_HEIGHT);
-    scene.setAttribute('fill', SCENE_COLOR);
+    scene.setFillColor(SCENE_COLOR);
 }
 
 function logStatus(origin, status) {

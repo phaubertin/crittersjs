@@ -26,42 +26,78 @@
  */
 
 export class SvgCanvas {
-    constructor(private readonly element: SVGSVGElement) {}
+    constructor(private readonly rootElement: SVGSVGElement) {}
 
-    static create(parent: HTMLElement) {
+    static create(parent: HTMLElement): SvgCanvas {
         const element = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         parent.appendChild(element);
         return new SvgCanvas(element);
     }
 
     setViewbox(width: number, height: number): void {
-        this.element.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+        this.rootElement.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
     }
 
-    addRectangle(x: number, y: number, w: number, h: number): Element {
-        const svgNS = this.element.namespaceURI;
-        const rect = document.createElementNS(svgNS, 'rect');
+    addRectangle(x: number, y: number, w: number, h: number): SvgShape {
+        const svgNS = this.rootElement.namespaceURI;
+        const element = document.createElementNS(svgNS, 'rect');
 
-        rect.setAttribute('x', x.toString());
-        rect.setAttribute('y', y.toString());
-        rect.setAttribute('width', w.toString());
-        rect.setAttribute('height', h.toString());
+        element.setAttribute('x', x.toString());
+        element.setAttribute('y', y.toString());
+        element.setAttribute('width', w.toString());
+        element.setAttribute('height', h.toString());
 
-        this.element.appendChild(rect);
+        this.rootElement.appendChild(element);
 
-        return rect;
+        return new SvgShape(element);
     }
 
-    addCircle(cx: number, cy: number, r: number): Element {
-        const svgNS = this.element.namespaceURI;
-        const circle = document.createElementNS(svgNS, 'circle');
+    addCircle(cx: number, cy: number, r: number): SvgShape {
+        const svgNS = this.rootElement.namespaceURI;
+        const element = document.createElementNS(svgNS, 'circle');
 
-        circle.setAttribute('cx', cx.toString());
-        circle.setAttribute('cy', cy.toString());
-        circle.setAttribute('r', r.toString());
+        element.setAttribute('cx', cx.toString());
+        element.setAttribute('cy', cy.toString());
+        element.setAttribute('r', r.toString());
 
-        this.element.appendChild(circle);
+        this.rootElement.appendChild(element);
 
-        return circle;
+        return new SvgShape(element);
+    }
+}
+
+export class SvgShape {
+    private translate: string;
+    private rotate: string;
+
+    constructor(private readonly element: Element) {
+        this.translate = '';
+        this.rotate = '';
+    }
+
+    setFillColor(color: string): void {
+        this.element.setAttribute('fill', color);
+    }
+
+    setStrokeColor(color: string): void {
+        this.element.setAttribute('stroke', color);
+    }
+
+    setTranslate(offsetX: number, offsetY: number): void {
+        this.translate = `translate(${offsetX}, ${offsetY})`;
+        this.updateTransform();
+    }
+
+    setRotate(angle: number): void {
+        this.rotate = `rotate(${angle})`;
+        this.updateTransform();
+    }
+
+    private updateTransform(): void {
+        const transform = `${this.translate} ${this.rotate}`.trim();
+
+        if (transform) {
+            this.element.setAttribute('transform', transform);
+        }
     }
 }

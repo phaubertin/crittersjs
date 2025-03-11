@@ -28,18 +28,13 @@
 import { computeBrainControl } from './brain';
 import { BASE_SPEED_ANGULAR, BASE_SPEED_FORWARD, CRITTER_COLOR, CRITTER_SIZE } from './config';
 import { Genome } from './genome';
-import { SvgCanvas } from './svg';
+import { SvgCanvas, SvgShape } from './svg';
 
 export function createCritter(w: number, h: number, genome: Genome) {
-    function getTransform(x, y, angle) {
-        var degAngle = (-angle * 180) / Math.PI;
-        return 'translate(' + x + ',' + y + ') rotate(' + degAngle + ')';
-    }
-
     return {
-        head: undefined as unknown as Element,
+        head: undefined as unknown as SvgShape,
 
-        body: undefined as unknown as Element,
+        body: undefined as unknown as SvgShape,
 
         x: w * Math.random(),
 
@@ -111,20 +106,17 @@ export function createCritter(w: number, h: number, genome: Genome) {
             this.body = svg.addCircle(0 - 0.3 * CRITTER_SIZE, 0, 0.7 * CRITTER_SIZE);
             this.head = svg.addCircle(0.6 * CRITTER_SIZE, 0, 0.4 * CRITTER_SIZE);
 
-            this.body.setAttribute('fill', CRITTER_COLOR.toString());
-            this.head.setAttribute('fill', CRITTER_COLOR.toString());
+            this.body.setFillColor(CRITTER_COLOR);
+            this.head.setFillColor(CRITTER_COLOR);
         },
 
         renderSvg: function (offsetX, offsetY) {
-            this.body.setAttribute(
-                'transform',
-                getTransform(this.x + offsetX, this.y + offsetY, this.angle),
-            );
-            this.head.setAttribute(
-                'transform',
-                getTransform(this.x + offsetX, this.y + offsetY, this.angle),
-            );
-            this.head.setAttribute('fill', this.genome.color.toString());
+            const degAngle = (-this.angle * 180) / Math.PI;
+            this.body.setTranslate(this.x + offsetX, this.y + offsetY);
+            this.head.setTranslate(this.x + offsetX, this.y + offsetY);
+            this.body.setRotate(degAngle);
+            this.head.setRotate(degAngle);
+            this.head.setFillColor(this.genome.color);
         },
 
         getX: function () {
