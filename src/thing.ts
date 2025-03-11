@@ -25,6 +25,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { DANGER_COLOR, DANGER_SIZE, DANGER_SPEED, FOOD_COLOR, FOOD_SIZE, FOOD_SPEED } from "./config";
+import { svgCircle, svgRectangle } from "./main";
+
 function createBoing(speed, w, h) {
     var rand = Math.random();
     
@@ -95,15 +98,17 @@ function createBoing(speed, w, h) {
     }
 }
 
-const thingKind = {
+export const thingKind = {
     FOOD : 1,
     DANGER : 2
 }
 
-function createFood(w, h) {
+export function createFood(w: number, h: number) {
     var boing = createBoing(FOOD_SPEED, w, h);
         
     return {
+        circle: undefined as any,
+
         updatePosition : function(timeDelta) {
             boing.updatePosition(timeDelta)
         },
@@ -136,7 +141,7 @@ function createFood(w, h) {
     }
 }
 
-function createDanger(w, h) {
+export function createDanger(w, h) {
     var boing = createBoing(DANGER_SPEED, w, h);
     
     function getTransform(x, y) {
@@ -144,6 +149,8 @@ function createDanger(w, h) {
     }
         
     return {
+        rect: undefined as any,
+
         updatePosition : function(timeDelta) {
             boing.updatePosition(timeDelta)
         },

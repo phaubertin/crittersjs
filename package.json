@@ -1,0 +1,27 @@
+{
+    "name": "crittersjs",
+    "version": "1.0.0",
+    "description": "Critters with small brains trained with a genetic algorithm",
+    "author": "Philippe Aubertin",
+    "license": "BSD-3-Clause",
+    "homepage": "https://github.com/phaubertin/crittersjs#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/phaubertin/crittersjs.git"
+    },
+    "bugs": {
+        "url": "https://github.com/phaubertin/crittersjs/issues"
+    },
+    "main": "index.js",
+    "scripts": {
+        "build": "webpack",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "devDependencies": {
+        "@types/webpack": "^5.28.5",
+        "ts-loader": "^9.5.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.8.2",
+        "webpack": "^5.98.0"
+    }
+}

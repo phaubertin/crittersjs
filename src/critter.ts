@@ -25,13 +25,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function createCritter(w, h, genome) {
+import { computeBrainControl } from "./brain";
+import { BASE_SPEED_ANGULAR, BASE_SPEED_FORWARD, CRITTER_COLOR, CRITTER_SIZE } from "./config";
+import { svgCircle } from "./main";
+
+export function createCritter(w, h, genome) {
     function getTransform(x, y, angle) {
         var degAngle = -angle * 180 / Math.PI;
         return 'translate(' + x + ',' + y + ') rotate(' + degAngle + ')'
     }
     
     return {
+        head: undefined as any,
+
+        body: undefined as any,
+
         x : w * Math.random(),
         
         y : h * Math.random(),

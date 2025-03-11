@@ -25,9 +25,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-const BRAIN_NUM_INPUTS = 8;
+export const BRAIN_NUM_INPUTS = 8;
 
-const BRAIN_NUM_OUTPUTS = 2;
+export const BRAIN_NUM_OUTPUTS = 2;
 
 function computeReluActivation(x) {
     if(x < 0.0) {
@@ -64,7 +64,7 @@ function computeSigmoishActivation(x) {
     }
 }
 
-function computeBrainControl(genome, stimuli) {
+export function computeBrainControl(genome, stimuli) {
     let hidden  = new Array(genome.hiddenWeights.length)
     let output  = new Array(2)
     let input   = [

@@ -25,10 +25,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function createScene(w, h, doCreateCritters) {
+import { CRITTER_SIZE, NUM_CRITTERS, NUM_DANGER, NUM_FOOD, SCENT_DISTANCE_LIMIT, VISION_ANGLE_LIMIT, VISION_DISTANCE_LIMIT } from "./config";
+import { createCritter } from "./critter";
+import { randomGenome } from "./genome";
+import { createDanger, createFood, thingKind } from "./thing";
+
+export function createScene(w, h, doCreateCritters) {
     const millisPerSecond = 1000;
-    var things = [];
-    var critters = [];
+    var things = [] as any[];
+    var critters = [] as any[];
     
     for(var idx = 0; idx < NUM_FOOD; ++idx) {
         things.push(createFood(w, h))
@@ -53,7 +58,7 @@ function createScene(w, h, doCreateCritters) {
         
         height : h,
         
-        critters : critters,
+        critters : critters as any[],
         
         lastUpdate : performance.now(),
         
@@ -122,7 +127,7 @@ function createScene(w, h, doCreateCritters) {
             let wallAngle           = 0.0;
             let critterSizeSquared  = CRITTER_SIZE * CRITTER_SIZE;
             
-            for(thing of things) {
+            for(let thing of things) {
                 let kind = thing.getKind();
                 
                 let dx = thing.getX() - critter.getX();

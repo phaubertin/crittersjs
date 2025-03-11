@@ -24,6 +24,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+import { BACKGROUND_COLOR, BORDER_COLOR, SCENE_BORDER, SCENE_COLOR, SCENE_HEIGHT, SCENE_MARGIN, SCENE_WIDTH } from "./config";
+import { getMessagePayload, messageType } from "./message";
+import { createScene } from "./scene";
+
  
 const BACKGROUND_WIDTH = SCENE_WIDTH + 2 * SCENE_MARGIN;
  
@@ -31,7 +36,7 @@ const BACKGROUND_HEIGHT = SCENE_HEIGHT + 2 * SCENE_MARGIN;
 
 var logParent;
 
-function svgRectangle(svg, x, y, w, h) {
+export function svgRectangle(svg, x, y, w, h) {
     var svgNS = svg.namespaceURI;
     var rect = document.createElementNS(svgNS,'rect');
     
@@ -45,7 +50,7 @@ function svgRectangle(svg, x, y, w, h) {
     return rect
 }
 
-function svgCircle(svg, cx, cy, r) {
+export function svgCircle(svg, cx, cy, r) {
     var svgNS = svg.namespaceURI;
     var circle = document.createElementNS(svgNS,'circle');
     
@@ -123,7 +128,7 @@ function updateSceneCritters(scene, genomes) {
     
     logMain("Updating scene.");
     
-    for(genome of genomes) {
+    for(let genome of genomes) {
         if(idx < scene.critters.length) {
             scene.critters[idx].genome = genome;
         }
@@ -160,9 +165,14 @@ function createWorker(scene) {
     }
 }
 
-function loadCritters(renderID, logID) {
-    var renderParent    = document.getElementById(renderID);
-    var svg             = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+export function loadCritters(renderID, logID) {
+    let renderParent    = document.getElementById(renderID);
+
+    if(!renderParent ) {
+        return;
+    }
+
+    let svg             = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     setViewbox(svg)
     renderParent.appendChild(svg);
     
@@ -170,7 +180,7 @@ function loadCritters(renderID, logID) {
     logParent = document.getElementById(logID);
     
     createBackground(svg);
-    scene = createScene(SCENE_WIDTH, SCENE_HEIGHT, true);
+    let scene = createScene(SCENE_WIDTH, SCENE_HEIGHT, true);
         
     scene.createSvg(svg);
     

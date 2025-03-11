@@ -24,6 +24,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+import { BEST_KEEP, BEST_PRIORITY, DANGER_COST, FIRST_UPDATE, FOOD_COST, LOG_INTERVAL, NUM_CRITTERS, POPULATION_SIZE, RAND_KEEP, RAND_NEW, SCENE_HEIGHT, SCENE_WIDTH, SIM_TIME, TIME_STEP, UPDATE_INTERVAL, WORST_DISCARD } from './config';
+import { createCritter } from './critter';
+import { makeBaby, randomGenome } from './genome';
+import { createMessage, messageType } from './message';
+import { createScene } from './scene';
  
 const SIM_STEPS = SIM_TIME * 1000 / TIME_STEP
 
@@ -80,7 +86,7 @@ function averageFitnessNFirst(simResult, n) {
 }
 
 function doUpdate(simResult, fitnessScore) {
-    let genomes = [];
+    let genomes = [] as any[];
 
     for(let idx = 0; idx < NUM_CRITTERS; ++idx) {
         genomes.push(simResult[idx].genome);
@@ -106,7 +112,7 @@ function sortResult(simResult) {
 }
 
 function selectPool(simResult) {
-    let pool = [];
+    let pool = [] as any[];
     
     for(let n = 0; n < WORST_DISCARD; ++n) {
         simResult.pop();
@@ -131,9 +137,9 @@ function selectPool(simResult) {
 }
 
 function generateNextPopulation(pool, size) {
-    let population = [];
+    let population = [] as any[];
         
-    for(n = 0; n < size; ++n) {
+    for(let n = 0; n < size; ++n) {
         let mommyIndex = Math.floor(Math.random() * pool.length);
         let daddyIndex = Math.floor(Math.random() * pool.length);
         
@@ -144,7 +150,7 @@ function generateNextPopulation(pool, size) {
 }
 
 function randomPopulation(size) {
-    let population = [];
+    let population = [] as any[];
     
     for(let idx = 0; idx < size; ++idx) {
         population.push(randomGenome());
@@ -159,7 +165,7 @@ function computeFitness(critter) {
 
 function runSimulation(population) {
     let scene = createScene(SCENE_WIDTH, SCENE_HEIGHT, false);
-    let result = [];
+    let result = [] as any[];
     
     /* Until all genomes in the population have been processed ... */
     for(let popIndex = 0; popIndex < population.length; /* nothing */) {
@@ -175,7 +181,7 @@ function runSimulation(population) {
         }
         
         /* harvest time */
-        critter = scene.harvestCritter();
+        let critter = scene.harvestCritter();
         
         while(critter != null) {
             result.push({

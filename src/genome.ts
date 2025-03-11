@@ -25,6 +25,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { BRAIN_NUM_INPUTS, BRAIN_NUM_OUTPUTS } from "./brain";
+import { GENOME_HIDDEN_RELU, GENOME_WEIGHT_AMPLITUDE } from "./config";
+
 function randomWeight() {
     return 2.0 * GENOME_WEIGHT_AMPLITUDE * (Math.random() - 0.5);
 }
@@ -52,7 +55,7 @@ function randomWeightMatrix(rows, cols) {
     return matrix;
 }
 
-function randomGenome() {
+export function randomGenome() {
     return {
         color : randomColor(),
         
@@ -62,7 +65,7 @@ function randomGenome() {
     }
 }
 
-function makeBaby(mommy, daddy) {
+export function makeBaby(mommy, daddy) {
     let hiddenWeights = new Array(mommy.hiddenWeights.length)
     let outputWeights = new Array(mommy.outputWeights.length)
     

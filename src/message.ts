@@ -25,18 +25,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-const messageType = {
+export const messageType = {
     GENOME_UPDATE : 1,
     LOG_STATUS : 2
 }
 
-function createMessage(type, data) {
+export function createMessage(type, data) {
     return {
         type : type,
         data : JSON.stringify(data)
     }
 }
 
-function getMessagePayload(message) {
+export function getMessagePayload(message) {
     return JSON.parse(message.data);
 }
