@@ -24,17 +24,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 export const messageType = {
-    GENOME_UPDATE : 1,
-    LOG_STATUS : 2
-}
+    GENOME_UPDATE: 1,
+    LOG_STATUS: 2,
+};
 
 export function createMessage(type, data) {
     return {
-        type : type,
-        data : JSON.stringify(data)
-    }
+        type: type,
+        data: JSON.stringify(data),
+    };
 }
 
 export function getMessagePayload(message) {

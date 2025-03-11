@@ -25,167 +25,166 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { DANGER_COLOR, DANGER_SIZE, DANGER_SPEED, FOOD_COLOR, FOOD_SIZE, FOOD_SPEED } from "./config";
+import {
+    DANGER_COLOR,
+    DANGER_SIZE,
+    DANGER_SPEED,
+    FOOD_COLOR,
+    FOOD_SIZE,
+    FOOD_SPEED,
+} from "./config";
 import { svgCircle, svgRectangle } from "./main";
 
 function createBoing(speed, w, h) {
     var rand = Math.random();
-    
-    if(rand < 0.25) {
+
+    if (rand < 0.25) {
         var goLeft = false;
         var goDown = false;
-    }
-    else if(rand < 0.5) {
+    } else if (rand < 0.5) {
         var goLeft = false;
         var goDown = true;
-    }
-    else if(rand < 0.75) {
+    } else if (rand < 0.75) {
         var goLeft = true;
         var goDown = false;
-    }
-    else {
+    } else {
         var goLeft = true;
         var goDown = true;
     }
-    
+
     return {
-        speedMult : speed * Math.SQRT1_2,
-        x : w * Math.random(),
-        y : h * Math.random(),
-        goLeft : goLeft,
-        goDown : goDown,
-        
-        updatePosition : function(timeDelta) {
+        speedMult: speed * Math.SQRT1_2,
+        x: w * Math.random(),
+        y: h * Math.random(),
+        goLeft: goLeft,
+        goDown: goDown,
+
+        updatePosition: function (timeDelta) {
             var deltaXY = timeDelta * this.speedMult;
-            
-            if(this.goLeft) {
+
+            if (this.goLeft) {
                 this.x += deltaXY;
-            }
-            else {
+            } else {
                 this.x -= deltaXY;
             }
-            
-            if(this.goDown) {
+
+            if (this.goDown) {
                 this.y += deltaXY;
-            }
-            else {
+            } else {
                 this.y -= deltaXY;
             }
-            
-            if(this.x >= w) {
+
+            if (this.x >= w) {
                 this.x = w - 1.0;
                 this.goLeft = false;
-            }
-            else if(this.x < 0) {
+            } else if (this.x < 0) {
                 this.x = 0;
                 this.goLeft = true;
             }
-            
-            if(this.y >= h) {
+
+            if (this.y >= h) {
                 this.y = h - 1.0;
                 this.goDown = false;
-            }
-            else if(this.y < 0) {
+            } else if (this.y < 0) {
                 this.y = 0;
                 this.goDown = true;
             }
         },
-        
-        setPosition : function(x, y) {
+
+        setPosition: function (x, y) {
             this.x = x;
             this.y = y;
-        }
-    }
+        },
+    };
 }
 
 export const thingKind = {
-    FOOD : 1,
-    DANGER : 2
-}
+    FOOD: 1,
+    DANGER: 2,
+};
 
 export function createFood(w: number, h: number) {
     var boing = createBoing(FOOD_SPEED, w, h);
-        
+
     return {
         circle: undefined as any,
 
-        updatePosition : function(timeDelta) {
-            boing.updatePosition(timeDelta)
+        updatePosition: function (timeDelta) {
+            boing.updatePosition(timeDelta);
         },
-        
-        createSvg : function (svg) {
+
+        createSvg: function (svg) {
             this.circle = svgCircle(svg, boing.x, boing.y, FOOD_SIZE);
-            this.circle.setAttribute('fill', FOOD_COLOR);
+            this.circle.setAttribute("fill", FOOD_COLOR);
         },
-        
-        renderSvg : function(offsetX, offsetY) {
-            this.circle.setAttribute('cx', boing.x + offsetX);
-            this.circle.setAttribute('cy', boing.y + offsetY);
+
+        renderSvg: function (offsetX, offsetY) {
+            this.circle.setAttribute("cx", boing.x + offsetX);
+            this.circle.setAttribute("cy", boing.y + offsetY);
         },
-        
-        getKind : function() {
-            return thingKind.FOOD
+
+        getKind: function () {
+            return thingKind.FOOD;
         },
-        
-        getX : function() {
-            return boing.x
+
+        getX: function () {
+            return boing.x;
         },
-        
-        getY : function() {
-            return boing.y
+
+        getY: function () {
+            return boing.y;
         },
-        
-        setPosition : function(x, y) {
-            boing.setPosition(x, y)
-        }
-    }
+
+        setPosition: function (x, y) {
+            boing.setPosition(x, y);
+        },
+    };
 }
 
 export function createDanger(w, h) {
     var boing = createBoing(DANGER_SPEED, w, h);
-    
+
     function getTransform(x, y) {
-        return 'translate(' + x + ',' + y + ') rotate(45)'
+        return "translate(" + x + "," + y + ") rotate(45)";
     }
-        
+
     return {
         rect: undefined as any,
 
-        updatePosition : function(timeDelta) {
-            boing.updatePosition(timeDelta)
+        updatePosition: function (timeDelta) {
+            boing.updatePosition(timeDelta);
         },
-        
-        createSvg : function (svg) {
+
+        createSvg: function (svg) {
             this.rect = svgRectangle(
                 svg,
                 0 - DANGER_SIZE / 2,
                 0 - DANGER_SIZE / 2,
                 DANGER_SIZE * Math.SQRT1_2,
-                DANGER_SIZE * Math.SQRT1_2);
-                
-            this.rect.setAttribute('fill', DANGER_COLOR);
+                DANGER_SIZE * Math.SQRT1_2,
+            );
+
+            this.rect.setAttribute("fill", DANGER_COLOR);
         },
-        
-        renderSvg: function(offsetX, offsetY) {
-            this.rect.setAttribute('transform', getTransform(
-                boing.x + offsetX,
-                boing.y + offsetY));
+
+        renderSvg: function (offsetX, offsetY) {
+            this.rect.setAttribute("transform", getTransform(boing.x + offsetX, boing.y + offsetY));
         },
-        
-        getKind : function() {
-            return thingKind.DANGER
+
+        getKind: function () {
+            return thingKind.DANGER;
         },
-        
-        getX : function() {
-            return boing.x
+
+        getX: function () {
+            return boing.x;
         },
-        
-        getY : function() {
-            return boing.y
+
+        getY: function () {
+            return boing.y;
         },
-        
-        setPosition : function(x, y) {
-            boing.setPosition(x, y)
-        }
-    }
+
+        setPosition: function (x, y) {
+            boing.setPosition(x, y);
+        },
+    };
 }

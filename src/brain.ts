@@ -24,39 +24,36 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 export const BRAIN_NUM_INPUTS = 8;
 
 export const BRAIN_NUM_OUTPUTS = 2;
 
 function computeReluActivation(x) {
-    if(x < 0.0) {
+    if (x < 0.0) {
         return 0.0;
-    }
-    else {
+    } else {
         return x;
     }
 }
 /* Piecewise polynomial approximation of a sigmoid-like curve
- * 
- * The value of the function is zero for arguments under -5 and one for 
+ *
+ * The value of the function is zero for arguments under -5 and one for
  * arguments over 5. Between -5 and 5, the value of the function is the value of
  * a degree 3 polynomial with the following characteristics:
- * 
+ *
  *  - The polynomial has value 0 at -5 and 1 at 5 so as not to have
  *    discontinuities.
  *  - The first derivative is zero at -5 and 5 to prevent discontinuities of
  *    that derivative.
- * 
+ *
  *  */
 function computeSigmoishActivation(x) {
-    if(x < -5.0) {
+    if (x < -5.0) {
         return -1.0;
-    }
-    else if(x > 5.0) {
-        return 1.0
-    }
-    else {
+    } else if (x > 5.0) {
+        return 1.0;
+    } else {
         /* Compute polynomial:
          *      poly(x) =  -0.002 * x^3 + 0.15 * x + 0.5
          *              = (-0.002 * x^2 + 0.15) * x + 0.5 */
@@ -65,9 +62,9 @@ function computeSigmoishActivation(x) {
 }
 
 export function computeBrainControl(genome, stimuli) {
-    let hidden  = new Array(genome.hiddenWeights.length)
-    let output  = new Array(2)
-    let input   = [
+    let hidden = new Array(genome.hiddenWeights.length);
+    let output = new Array(2);
+    let input = [
         stimuli.foodIntensity,
         stimuli.foodAngle,
         stimuli.dangerIntensity,
@@ -75,36 +72,36 @@ export function computeBrainControl(genome, stimuli) {
         stimuli.wallIntensity,
         stimuli.wallAngle,
         stimuli.foodOdor,
-        stimuli.dangerOdor
-    ]
-    
+        stimuli.dangerOdor,
+    ];
+
     /* Compute hidden layer. */
-    
-    for(var idx = 0; idx < hidden.length; ++idx) {
+
+    for (var idx = 0; idx < hidden.length; ++idx) {
         /* First weight is bias. */
         let acc = genome.hiddenWeights[idx][0];
-        
-        for(var idy = 0; idy < genome.hiddenWeights[idx].length - 1; ++idy) {
-            acc += input[idy] * genome.hiddenWeights[idx][idy+1];
+
+        for (var idy = 0; idy < genome.hiddenWeights[idx].length - 1; ++idy) {
+            acc += input[idy] * genome.hiddenWeights[idx][idy + 1];
         }
-        
+
         hidden[idx] = computeReluActivation(acc);
     }
-    
+
     /* Compute output layer. */
-    
-    for(var idx = 0; idx < output.length; ++idx) {
+
+    for (var idx = 0; idx < output.length; ++idx) {
         let acc = genome.outputWeights[idx][0];
-        
-        for(var idy = 0; idy < genome.outputWeights[idx].length - 1; ++idy) {
-            acc += hidden[idy] * genome.outputWeights[idx][idy+1];
+
+        for (var idy = 0; idy < genome.outputWeights[idx].length - 1; ++idy) {
+            acc += hidden[idy] * genome.outputWeights[idx][idy + 1];
         }
-        
+
         output[idx] = computeSigmoishActivation(acc);
     }
-    
+
     return {
-        leftSpeed   : output[0],
-        rightSpeed  : output[1]
-    }
+        leftSpeed: output[0],
+        rightSpeed: output[1],
+    };
 }

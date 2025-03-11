@@ -31,125 +31,117 @@ import { svgCircle } from "./main";
 
 export function createCritter(w, h, genome) {
     function getTransform(x, y, angle) {
-        var degAngle = -angle * 180 / Math.PI;
-        return 'translate(' + x + ',' + y + ') rotate(' + degAngle + ')'
+        var degAngle = (-angle * 180) / Math.PI;
+        return "translate(" + x + "," + y + ") rotate(" + degAngle + ")";
     }
-    
+
     return {
         head: undefined as any,
 
         body: undefined as any,
 
-        x : w * Math.random(),
-        
-        y : h * Math.random(),
-        
+        x: w * Math.random(),
+
+        y: h * Math.random(),
+
         /* Range: -pi..pi */
-        angle : 2.0 * Math.PI * (Math.random() - 0.5),
-        
-        genome : genome,
-        
-        brainControl : {
-            leftSpeed : 0.0,
-            rightSpeed : 0.0
+        angle: 2.0 * Math.PI * (Math.random() - 0.5),
+
+        genome: genome,
+
+        brainControl: {
+            leftSpeed: 0.0,
+            rightSpeed: 0.0,
         },
-        
-        foodCount : 0,
-        
-        dangerCount : 0,
-        
-        updatePosition : function(timeDelta) {
+
+        foodCount: 0,
+
+        dangerCount: 0,
+
+        updatePosition: function (timeDelta) {
             /* Update position. */
-            
-            let speed = BASE_SPEED_FORWARD * (
+
+            let speed =
+                BASE_SPEED_FORWARD *
                 /* Arithmetic mean */
-                this.brainControl.rightSpeed + this.brainControl.leftSpeed) * 0.5;
-            
+                (this.brainControl.rightSpeed + this.brainControl.leftSpeed) *
+                0.5;
+
             let distance = timeDelta * speed;
             let x = this.x + Math.cos(this.angle) * distance;
             let y = this.y - Math.sin(this.angle) * distance;
 
-            if(x < 0.0) {
+            if (x < 0.0) {
                 x = 0.0;
-            }
-            else if(x >= w) {
+            } else if (x >= w) {
                 x = w - 1;
             }
-            
-            if(y < 0.0) {
+
+            if (y < 0.0) {
                 y = 0.0;
-            }
-            else if(y >= h) {
+            } else if (y >= h) {
                 y = h - 1;
             }
-            
+
             this.setPosition(x, y);
-            
+
             /* Update angle. */
-            
-            let omega = BASE_SPEED_ANGULAR * (
-                this.brainControl.rightSpeed - this.brainControl.leftSpeed);
+
+            let omega =
+                BASE_SPEED_ANGULAR * (this.brainControl.rightSpeed - this.brainControl.leftSpeed);
             let deltaAngle = timeDelta * omega;
-            
+
             this.angle += deltaAngle;
-                
-            while(this.angle < -Math.PI) {
+
+            while (this.angle < -Math.PI) {
                 this.angle += 2 * Math.PI;
             }
-            
-            while(this.angle > Math.PI) {
+
+            while (this.angle > Math.PI) {
                 this.angle -= 2 * Math.PI;
             }
         },
-        
-        updateBrainControl : function(stimuli) {
+
+        updateBrainControl: function (stimuli) {
             this.brainControl = computeBrainControl(this.genome, stimuli);
         },
-        
-        createSvg : function(svg) {
-            this.body = svgCircle(
-                svg,
-                0 - 0.3 * CRITTER_SIZE,
-                0,
-                0.7 * CRITTER_SIZE);
-            
-            this.head = svgCircle(
-                svg,
-                0.6 * CRITTER_SIZE,
-                0,
-                0.4 * CRITTER_SIZE);
-            
-            this.body.setAttribute('fill', CRITTER_COLOR);
-            this.head.setAttribute('fill', CRITTER_COLOR);
+
+        createSvg: function (svg) {
+            this.body = svgCircle(svg, 0 - 0.3 * CRITTER_SIZE, 0, 0.7 * CRITTER_SIZE);
+
+            this.head = svgCircle(svg, 0.6 * CRITTER_SIZE, 0, 0.4 * CRITTER_SIZE);
+
+            this.body.setAttribute("fill", CRITTER_COLOR);
+            this.head.setAttribute("fill", CRITTER_COLOR);
         },
-        
-        renderSvg: function(offsetX, offsetY) {
-            this.body.setAttribute('transform', getTransform(
-                this.x + offsetX,
-                this.y + offsetY,
-                this.angle));
-            this.head.setAttribute('transform', getTransform(
-                this.x + offsetX,
-                this.y + offsetY,
-                this.angle));
-            this.head.setAttribute('fill', this.genome.color);
+
+        renderSvg: function (offsetX, offsetY) {
+            this.body.setAttribute(
+                "transform",
+                getTransform(this.x + offsetX, this.y + offsetY, this.angle),
+            );
+            this.head.setAttribute(
+                "transform",
+                getTransform(this.x + offsetX, this.y + offsetY, this.angle),
+            );
+            this.head.setAttribute("fill", this.genome.color);
         },
-        
-        getX : function() {
+
+        getX: function () {
             return this.x;
         },
-        
-        getY : function() {
+
+        getY: function () {
             return this.y;
         },
-        
+
         getAngle() {
             return this.angle;
         },
-        
-        setPosition : function(x, y) {
+
+        setPosition: function (x, y) {
             this.x = x;
             this.y = y;
-        }
-    }
+        },
+    };
 }

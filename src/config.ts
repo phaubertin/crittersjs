@@ -25,91 +25,91 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-export const SCENE_WIDTH  = 800
+export const SCENE_WIDTH = 800;
 
-export const SCENE_HEIGHT = 500
+export const SCENE_HEIGHT = 500;
 
-export const SCENE_BORDER = 10
+export const SCENE_BORDER = 10;
 
-export const SCENE_MARGIN = 20
+export const SCENE_MARGIN = 20;
 
-export const BACKGROUND_COLOR = 'black'
+export const BACKGROUND_COLOR = "black";
 
-export const BORDER_COLOR = 'rgb(200, 200, 200)'
+export const BORDER_COLOR = "rgb(200, 200, 200)";
 
-export const SCENE_COLOR = 'rgb(32, 32, 32)'
+export const SCENE_COLOR = "rgb(32, 32, 32)";
 
-export const NUM_FOOD = 4
+export const NUM_FOOD = 4;
 
-export const FOOD_COLOR = 'rgb(0, 200, 0)'
+export const FOOD_COLOR = "rgb(0, 200, 0)";
 
-export const FOOD_SPEED = 10.0
+export const FOOD_SPEED = 10.0;
 
-export const FOOD_SIZE = 6.0
+export const FOOD_SIZE = 6.0;
 
-export const NUM_DANGER = 2
+export const NUM_DANGER = 2;
 
-export const DANGER_COLOR = 'rgb(200, 0, 0)'
+export const DANGER_COLOR = "rgb(200, 0, 0)";
 
-export const DANGER_SPEED = 40.0
+export const DANGER_SPEED = 40.0;
 
-export const DANGER_SIZE = 16.0
+export const DANGER_SIZE = 16.0;
 
-export const NUM_CRITTERS = 5
+export const NUM_CRITTERS = 5;
 
-export const CRITTER_COLOR = 'rgb(100, 100, 200)'
+export const CRITTER_COLOR = "rgb(100, 100, 200)";
 
-export const CRITTER_SIZE = 10.0
+export const CRITTER_SIZE = 10.0;
 
-export const VISION_DISTANCE_LIMIT = 600.0
+export const VISION_DISTANCE_LIMIT = 600.0;
 
-export const VISION_ANGLE_LIMIT = 0.7 * Math.PI / 2
+export const VISION_ANGLE_LIMIT = (0.7 * Math.PI) / 2;
 
-export const SCENT_DISTANCE_LIMIT = 250.0
+export const SCENT_DISTANCE_LIMIT = 250.0;
 
 /* In viewbox pixels per second */
-export const BASE_SPEED_FORWARD = 100.0
+export const BASE_SPEED_FORWARD = 100.0;
 
 /* In radian per second */
-export const BASE_SPEED_ANGULAR = 0.2 * Math.PI
+export const BASE_SPEED_ANGULAR = 0.2 * Math.PI;
 
 /* Number of neurons with a rectifier activation function (ReLU) in the hidden layer.
  * Must be a multiple of four. */
-export const GENOME_HIDDEN_RELU = 8
+export const GENOME_HIDDEN_RELU = 8;
 
 /* All weights are between plus or minus this value. */
-export const GENOME_WEIGHT_AMPLITUDE = 20.0
+export const GENOME_WEIGHT_AMPLITUDE = 20.0;
 
 /* Number of genomes in a generation */
-export const POPULATION_SIZE = 200
+export const POPULATION_SIZE = 200;
 
 /* Number of selected genomes with top fitness score */
-export const BEST_KEEP = 9
+export const BEST_KEEP = 9;
 
 /* Number of randomly-selected genomes */
-export const RAND_KEEP = 48
+export const RAND_KEEP = 48;
 
 /* Number of novel randomly-generated genomes */
-export const RAND_NEW = 6
+export const RAND_NEW = 6;
 
 /* Weight of top fitness score genomes (i.e. how many time each is added to the pool) */
-export const BEST_PRIORITY = 4
+export const BEST_PRIORITY = 4;
 
 /* Number of genomes with the lowest fitness score that are discarded */
-export const WORST_DISCARD = 50
+export const WORST_DISCARD = 50;
 
-export const SIM_TIME = 40 /* in seconds */
+export const SIM_TIME = 40; /* in seconds */
 
-export const TIME_STEP = 200 /* in milliseconds */
+export const TIME_STEP = 200; /* in milliseconds */
 
 /* Fitness score: number of points gained each time food is captured */
-export const FOOD_COST = 1.0
+export const FOOD_COST = 1.0;
 
 /* Fitness score: number of points gained (negative for loss) each time the critter is captured */
-export const DANGER_COST = -50.0
+export const DANGER_COST = -50.0;
 
-export const FIRST_UPDATE = 2.0 /* In seconds */
+export const FIRST_UPDATE = 2.0; /* In seconds */
 
-export const UPDATE_INTERVAL = 20.0 /* In seconds */
+export const UPDATE_INTERVAL = 20.0; /* In seconds */
 
-export const LOG_INTERVAL = 50 /* In generations */
+export const LOG_INTERVAL = 50; /* In generations */
