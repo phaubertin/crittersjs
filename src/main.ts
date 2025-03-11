@@ -36,7 +36,7 @@ import {
 } from './config';
 import { getMessagePayload, messageType } from './message';
 import { createScene } from './scene';
-import { Svg } from './svg';
+import { SvgCanvas } from './svg';
 
 const BACKGROUND_WIDTH = SCENE_WIDTH + 2 * SCENE_MARGIN;
 
@@ -60,7 +60,7 @@ var logParent;
  *
  * */
 
-function createBackground(svg: Svg) {
+function createBackground(svg: SvgCanvas) {
     const background = svg.addRectangle(0, 0, BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
     background.setAttribute('fill', BACKGROUND_COLOR);
 
@@ -114,6 +114,8 @@ function handleWorkerMessage(scene, e) {
     let message = e.data;
     let payload = getMessagePayload(message);
 
+    console.log(payload);
+
     switch (message.type) {
         case messageType.GENOME_UPDATE:
             updateSceneCritters(scene, payload);
@@ -143,7 +145,7 @@ export function loadCritters(renderID, logID) {
         return;
     }
 
-    const svg = Svg.create(renderParent);
+    const svg = SvgCanvas.create(renderParent);
     svg.setViewbox(BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
 
     /* This variable is global. */

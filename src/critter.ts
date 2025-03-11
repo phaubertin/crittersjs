@@ -27,9 +27,10 @@
 
 import { computeBrainControl } from './brain';
 import { BASE_SPEED_ANGULAR, BASE_SPEED_FORWARD, CRITTER_COLOR, CRITTER_SIZE } from './config';
-import { Svg } from './svg';
+import { Genome } from './genome';
+import { SvgCanvas } from './svg';
 
-export function createCritter(w, h, genome) {
+export function createCritter(w: number, h: number, genome: Genome) {
     function getTransform(x, y, angle) {
         var degAngle = (-angle * 180) / Math.PI;
         return 'translate(' + x + ',' + y + ') rotate(' + degAngle + ')';
@@ -106,12 +107,12 @@ export function createCritter(w, h, genome) {
             this.brainControl = computeBrainControl(this.genome, stimuli);
         },
 
-        createSvg: function (svg: Svg) {
+        createSvg: function (svg: SvgCanvas) {
             this.body = svg.addCircle(0 - 0.3 * CRITTER_SIZE, 0, 0.7 * CRITTER_SIZE);
             this.head = svg.addCircle(0.6 * CRITTER_SIZE, 0, 0.4 * CRITTER_SIZE);
 
-            this.body.setAttribute('fill', CRITTER_COLOR);
-            this.head.setAttribute('fill', CRITTER_COLOR);
+            this.body.setAttribute('fill', CRITTER_COLOR.toString());
+            this.head.setAttribute('fill', CRITTER_COLOR.toString());
         },
 
         renderSvg: function (offsetX, offsetY) {
@@ -123,7 +124,7 @@ export function createCritter(w, h, genome) {
                 'transform',
                 getTransform(this.x + offsetX, this.y + offsetY, this.angle),
             );
-            this.head.setAttribute('fill', this.genome.color);
+            this.head.setAttribute('fill', this.genome.color.toString());
         },
 
         getX: function () {

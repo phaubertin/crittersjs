@@ -25,6 +25,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { Color } from './color';
+
 export const SCENE_WIDTH = 800;
 
 export const SCENE_HEIGHT = 500;
@@ -33,15 +35,15 @@ export const SCENE_BORDER = 10;
 
 export const SCENE_MARGIN = 20;
 
-export const BACKGROUND_COLOR = 'black';
+export const BACKGROUND_COLOR = Color.rgb(0, 0, 0);
 
-export const BORDER_COLOR = 'rgb(200, 200, 200)';
+export const BORDER_COLOR = Color.rgb(200, 200, 200);
 
-export const SCENE_COLOR = 'rgb(32, 32, 32)';
+export const SCENE_COLOR = Color.rgb(32, 32, 32);
 
 export const NUM_FOOD = 4;
 
-export const FOOD_COLOR = 'rgb(0, 200, 0)';
+export const FOOD_COLOR = Color.rgb(0, 200, 0);
 
 export const FOOD_SPEED = 10.0;
 
@@ -49,7 +51,7 @@ export const FOOD_SIZE = 6.0;
 
 export const NUM_DANGER = 2;
 
-export const DANGER_COLOR = 'rgb(200, 0, 0)';
+export const DANGER_COLOR = Color.rgb(200, 0, 0);
 
 export const DANGER_SPEED = 40.0;
 
@@ -57,7 +59,7 @@ export const DANGER_SIZE = 16.0;
 
 export const NUM_CRITTERS = 5;
 
-export const CRITTER_COLOR = 'rgb(100, 100, 200)';
+export const CRITTER_COLOR = Color.rgb(100, 100, 200);
 
 export const CRITTER_SIZE = 10.0;
 

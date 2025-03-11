@@ -26,25 +26,20 @@
  */
 
 import { BRAIN_NUM_INPUTS, BRAIN_NUM_OUTPUTS } from './brain';
+import { Color } from './color';
 import { GENOME_HIDDEN_RELU, GENOME_WEIGHT_AMPLITUDE } from './config';
 
-function randomWeight() {
+export interface Genome {
+    color: string;
+    hiddenWeights: number[][];
+    outputWeights: number[][];
+}
+
+function randomWeight(): number {
     return 2.0 * GENOME_WEIGHT_AMPLITUDE * (Math.random() - 0.5);
 }
 
-function randomColor() {
-    return (
-        'rgb(' +
-        Math.floor(50 + 200 * Math.random()).toString() +
-        ', ' +
-        Math.floor(50 + 200 * Math.random()).toString() +
-        ', ' +
-        Math.floor(50 + 200 * Math.random()).toString() +
-        ')'
-    );
-}
-
-function randomWeightMatrix(rows, cols) {
+function randomWeightMatrix(rows: number, cols: number): number[][] {
     var matrix = new Array(rows);
 
     for (var rowIndex = 0; rowIndex < matrix.length; ++rowIndex) {
@@ -60,17 +55,15 @@ function randomWeightMatrix(rows, cols) {
     return matrix;
 }
 
-export function randomGenome() {
+export function randomGenome(): Genome {
     return {
-        color: randomColor(),
-
+        color: Color.random(50, 250),
         hiddenWeights: randomWeightMatrix(GENOME_HIDDEN_RELU, BRAIN_NUM_INPUTS + 1),
-
         outputWeights: randomWeightMatrix(BRAIN_NUM_OUTPUTS, GENOME_HIDDEN_RELU + 1),
     };
 }
 
-export function makeBaby(mommy, daddy) {
+export function makeBaby(mommy: Genome, daddy: Genome): Genome {
     let hiddenWeights = new Array(mommy.hiddenWeights.length);
     let outputWeights = new Array(mommy.outputWeights.length);
 
@@ -138,17 +131,17 @@ export function makeBaby(mommy, daddy) {
     }
 
     /* Color */
+    let color: string;
+
     if (Math.random() < 0.5) {
-        var color = mommy.color;
+        color = mommy.color;
     } else {
-        var color = daddy.color;
+        color = daddy.color;
     }
 
     return {
         color: color,
-
         hiddenWeights: hiddenWeights,
-
         outputWeights: outputWeights,
     };
 }

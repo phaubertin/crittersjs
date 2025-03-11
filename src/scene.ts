@@ -36,7 +36,7 @@ import {
 } from './config';
 import { createCritter } from './critter';
 import { randomGenome } from './genome';
-import { Svg } from './svg';
+import { SvgCanvas } from './svg';
 import { createDanger, createFood, thingKind } from './thing';
 
 export function createScene(w, h, doCreateCritters) {
@@ -295,7 +295,7 @@ export function createScene(w, h, doCreateCritters) {
             thing.setPosition(this.width * Math.random(), this.height * Math.random());
         },
 
-        createSvg: function (svg: Svg) {
+        createSvg: function (svg: SvgCanvas) {
             for (const thing of things) {
                 thing.createSvg(svg);
             }

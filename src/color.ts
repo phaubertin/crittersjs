@@ -25,43 +25,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-export class SvgCanvas {
-    constructor(private readonly element: SVGSVGElement) {}
-
-    static create(parent: HTMLElement) {
-        const element = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        parent.appendChild(element);
-        return new SvgCanvas(element);
+export class Color {
+    static rgb(r: number, g: number, b: number): string {
+        return `rgb(${r}, ${g}, ${b})`;
     }
 
-    setViewbox(width: number, height: number): void {
-        this.element.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+    static random(min: number, max: number): string {
+        return this.rgb(
+            this.randomComponent(min, max),
+            this.randomComponent(min, max),
+            this.randomComponent(min, max),
+        );
     }
 
-    addRectangle(x: number, y: number, w: number, h: number): Element {
-        const svgNS = this.element.namespaceURI;
-        const rect = document.createElementNS(svgNS, 'rect');
-
-        rect.setAttribute('x', x.toString());
-        rect.setAttribute('y', y.toString());
-        rect.setAttribute('width', w.toString());
-        rect.setAttribute('height', h.toString());
-
-        this.element.appendChild(rect);
-
-        return rect;
-    }
-
-    addCircle(cx: number, cy: number, r: number): Element {
-        const svgNS = this.element.namespaceURI;
-        const circle = document.createElementNS(svgNS, 'circle');
-
-        circle.setAttribute('cx', cx.toString());
-        circle.setAttribute('cy', cy.toString());
-        circle.setAttribute('r', r.toString());
-
-        this.element.appendChild(circle);
-
-        return circle;
+    private static randomComponent(min: number, max: number): number {
+        return Math.floor(min + (max - min) * Math.random());
     }
 }
