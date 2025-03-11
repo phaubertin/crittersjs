@@ -27,7 +27,7 @@
 
 import { computeBrainControl } from './brain';
 import { BASE_SPEED_ANGULAR, BASE_SPEED_FORWARD, CRITTER_COLOR, CRITTER_SIZE } from './config';
-import { svgCircle } from './main';
+import { Svg } from './svg';
 
 export function createCritter(w, h, genome) {
     function getTransform(x, y, angle) {
@@ -36,9 +36,9 @@ export function createCritter(w, h, genome) {
     }
 
     return {
-        head: undefined as any,
+        head: undefined as unknown as Element,
 
-        body: undefined as any,
+        body: undefined as unknown as Element,
 
         x: w * Math.random(),
 
@@ -106,10 +106,9 @@ export function createCritter(w, h, genome) {
             this.brainControl = computeBrainControl(this.genome, stimuli);
         },
 
-        createSvg: function (svg) {
-            this.body = svgCircle(svg, 0 - 0.3 * CRITTER_SIZE, 0, 0.7 * CRITTER_SIZE);
-
-            this.head = svgCircle(svg, 0.6 * CRITTER_SIZE, 0, 0.4 * CRITTER_SIZE);
+        createSvg: function (svg: Svg) {
+            this.body = svg.addCircle(0 - 0.3 * CRITTER_SIZE, 0, 0.7 * CRITTER_SIZE);
+            this.head = svg.addCircle(0.6 * CRITTER_SIZE, 0, 0.4 * CRITTER_SIZE);
 
             this.body.setAttribute('fill', CRITTER_COLOR);
             this.head.setAttribute('fill', CRITTER_COLOR);

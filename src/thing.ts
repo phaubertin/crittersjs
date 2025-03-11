@@ -33,7 +33,7 @@ import {
     FOOD_SIZE,
     FOOD_SPEED,
 } from './config';
-import { svgCircle, svgRectangle } from './main';
+import { Svg } from './svg';
 
 function createBoing(speed, w, h) {
     var rand = Math.random();
@@ -113,8 +113,8 @@ export function createFood(w: number, h: number) {
             boing.updatePosition(timeDelta);
         },
 
-        createSvg: function (svg) {
-            this.circle = svgCircle(svg, boing.x, boing.y, FOOD_SIZE);
+        createSvg: function (svg: Svg) {
+            this.circle = svg.addCircle(boing.x, boing.y, FOOD_SIZE);
             this.circle.setAttribute('fill', FOOD_COLOR);
         },
 
@@ -149,15 +149,14 @@ export function createDanger(w, h) {
     }
 
     return {
-        rect: undefined as any,
+        rect: undefined as unknown as Element,
 
         updatePosition: function (timeDelta) {
             boing.updatePosition(timeDelta);
         },
 
-        createSvg: function (svg) {
-            this.rect = svgRectangle(
-                svg,
+        createSvg: function (svg: Svg) {
+            this.rect = svg.addRectangle(
                 0 - DANGER_SIZE / 2,
                 0 - DANGER_SIZE / 2,
                 DANGER_SIZE * Math.SQRT1_2,

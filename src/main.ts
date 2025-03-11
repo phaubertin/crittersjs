@@ -36,39 +36,13 @@ import {
 } from './config';
 import { getMessagePayload, messageType } from './message';
 import { createScene } from './scene';
+import { Svg } from './svg';
 
 const BACKGROUND_WIDTH = SCENE_WIDTH + 2 * SCENE_MARGIN;
 
 const BACKGROUND_HEIGHT = SCENE_HEIGHT + 2 * SCENE_MARGIN;
 
 var logParent;
-
-export function svgRectangle(svg, x, y, w, h) {
-    var svgNS = svg.namespaceURI;
-    var rect = document.createElementNS(svgNS, 'rect');
-
-    rect.setAttribute('x', x);
-    rect.setAttribute('y', y);
-    rect.setAttribute('width', w);
-    rect.setAttribute('height', h);
-
-    svg.appendChild(rect);
-
-    return rect;
-}
-
-export function svgCircle(svg, cx, cy, r) {
-    var svgNS = svg.namespaceURI;
-    var circle = document.createElementNS(svgNS, 'circle');
-
-    circle.setAttribute('cx', cx);
-    circle.setAttribute('cy', cy);
-    circle.setAttribute('r', r);
-
-    svg.appendChild(circle);
-
-    return circle;
-}
 
 /*  +--------------------------------------------------------------------------+
  *  |//////////////////////////////////////////////////////////////////////////|
@@ -86,12 +60,11 @@ export function svgCircle(svg, cx, cy, r) {
  *
  * */
 
-function createBackground(svg) {
-    var background = svgRectangle(svg, 0, 0, BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
+function createBackground(svg: Svg) {
+    const background = svg.addRectangle(0, 0, BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
     background.setAttribute('fill', BACKGROUND_COLOR);
 
-    var border = svgRectangle(
-        svg,
+    const border = svg.addRectangle(
         SCENE_BORDER,
         SCENE_BORDER,
         SCENE_WIDTH + 2 * SCENE_BORDER,
@@ -99,12 +72,8 @@ function createBackground(svg) {
     );
     border.setAttribute('stroke', BORDER_COLOR);
 
-    var scene = svgRectangle(svg, SCENE_MARGIN, SCENE_MARGIN, SCENE_WIDTH, SCENE_HEIGHT);
+    const scene = svg.addRectangle(SCENE_MARGIN, SCENE_MARGIN, SCENE_WIDTH, SCENE_HEIGHT);
     scene.setAttribute('fill', SCENE_COLOR);
-}
-
-function setViewbox(svg) {
-    svg.setAttribute('viewBox', '0 0 ' + BACKGROUND_WIDTH + ' ' + BACKGROUND_HEIGHT);
 }
 
 function logStatus(origin, status) {
@@ -174,15 +143,14 @@ export function loadCritters(renderID, logID) {
         return;
     }
 
-    let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    setViewbox(svg);
-    renderParent.appendChild(svg);
+    const svg = Svg.create(renderParent);
+    svg.setViewbox(BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
 
     /* This variable is global. */
     logParent = document.getElementById(logID);
 
     createBackground(svg);
-    let scene = createScene(SCENE_WIDTH, SCENE_HEIGHT, true);
+    const scene = createScene(SCENE_WIDTH, SCENE_HEIGHT, true);
 
     scene.createSvg(svg);
 
