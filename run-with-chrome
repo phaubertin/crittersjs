@@ -7,4 +7,4 @@
 #
 # See README.md at the top of the repository for detail.
 
-`google-chrome --version > /dev/null 2>&1 && echo google-chrome || echo chromium` --allow-file-access-from-files target/index.html
+`google-chrome --version > /dev/null 2>&1 && echo google-chrome || echo chromium` --allow-file-access-from-files ./dist/index.html

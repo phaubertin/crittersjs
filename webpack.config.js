@@ -23,9 +23,8 @@ module.exports = {
         extensions: ['.tsx', '.ts', '.js'],
     },
     output: {
-        path: path.resolve(__dirname, 'target'),
+        path: path.resolve(__dirname, 'dist'),
         library: {
-            //name: 'loadCritters',
             type: 'window',
         },
     },

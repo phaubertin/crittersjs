@@ -1,6 +1,5 @@
-# The target/ directory contains the files produced by the build process.
-target/*
-!target/README
+# The dist/ directory contains the files produced by the build process.
+dist/*
 
 # JavaScript modules
 node_modules/

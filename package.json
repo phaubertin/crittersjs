@@ -12,9 +12,12 @@
     "bugs": {
         "url": "https://github.com/phaubertin/crittersjs/issues"
     },
-    "main": "index.js",
+    "main": "main.ts",
     "scripts": {
-        "build": "webpack",
+        "build": "npm run static && npm run pack",
+        "clean": "rm -rf dist/",
+        "pack": "webpack",
+        "static": "mkdir -p dist/ && cp static/* dist/",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "devDependencies": {
