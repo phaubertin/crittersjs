@@ -25,8 +25,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { BRAIN_NUM_INPUTS, BRAIN_NUM_OUTPUTS } from "./brain";
-import { GENOME_HIDDEN_RELU, GENOME_WEIGHT_AMPLITUDE } from "./config";
+import { BRAIN_NUM_INPUTS, BRAIN_NUM_OUTPUTS } from './brain';
+import { GENOME_HIDDEN_RELU, GENOME_WEIGHT_AMPLITUDE } from './config';
 
 function randomWeight() {
     return 2.0 * GENOME_WEIGHT_AMPLITUDE * (Math.random() - 0.5);
@@ -34,13 +34,13 @@ function randomWeight() {
 
 function randomColor() {
     return (
-        "rgb(" +
+        'rgb(' +
         Math.floor(50 + 200 * Math.random()).toString() +
-        ", " +
+        ', ' +
         Math.floor(50 + 200 * Math.random()).toString() +
-        ", " +
+        ', ' +
         Math.floor(50 + 200 * Math.random()).toString() +
-        ")"
+        ')'
     );
 }
 

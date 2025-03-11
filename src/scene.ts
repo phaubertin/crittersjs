@@ -33,10 +33,10 @@ import {
     SCENT_DISTANCE_LIMIT,
     VISION_ANGLE_LIMIT,
     VISION_DISTANCE_LIMIT,
-} from "./config";
-import { createCritter } from "./critter";
-import { randomGenome } from "./genome";
-import { createDanger, createFood, thingKind } from "./thing";
+} from './config';
+import { createCritter } from './critter';
+import { randomGenome } from './genome';
+import { createDanger, createFood, thingKind } from './thing';
 
 export function createScene(w, h, doCreateCritters) {
     const millisPerSecond = 1000;

@@ -33,9 +33,9 @@ import {
     SCENE_HEIGHT,
     SCENE_MARGIN,
     SCENE_WIDTH,
-} from "./config";
-import { getMessagePayload, messageType } from "./message";
-import { createScene } from "./scene";
+} from './config';
+import { getMessagePayload, messageType } from './message';
+import { createScene } from './scene';
 
 const BACKGROUND_WIDTH = SCENE_WIDTH + 2 * SCENE_MARGIN;
 
@@ -45,12 +45,12 @@ var logParent;
 
 export function svgRectangle(svg, x, y, w, h) {
     var svgNS = svg.namespaceURI;
-    var rect = document.createElementNS(svgNS, "rect");
+    var rect = document.createElementNS(svgNS, 'rect');
 
-    rect.setAttribute("x", x);
-    rect.setAttribute("y", y);
-    rect.setAttribute("width", w);
-    rect.setAttribute("height", h);
+    rect.setAttribute('x', x);
+    rect.setAttribute('y', y);
+    rect.setAttribute('width', w);
+    rect.setAttribute('height', h);
 
     svg.appendChild(rect);
 
@@ -59,11 +59,11 @@ export function svgRectangle(svg, x, y, w, h) {
 
 export function svgCircle(svg, cx, cy, r) {
     var svgNS = svg.namespaceURI;
-    var circle = document.createElementNS(svgNS, "circle");
+    var circle = document.createElementNS(svgNS, 'circle');
 
-    circle.setAttribute("cx", cx);
-    circle.setAttribute("cy", cy);
-    circle.setAttribute("r", r);
+    circle.setAttribute('cx', cx);
+    circle.setAttribute('cy', cy);
+    circle.setAttribute('r', r);
 
     svg.appendChild(circle);
 
@@ -88,7 +88,7 @@ export function svgCircle(svg, cx, cy, r) {
 
 function createBackground(svg) {
     var background = svgRectangle(svg, 0, 0, BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
-    background.setAttribute("fill", BACKGROUND_COLOR);
+    background.setAttribute('fill', BACKGROUND_COLOR);
 
     var border = svgRectangle(
         svg,
@@ -97,24 +97,24 @@ function createBackground(svg) {
         SCENE_WIDTH + 2 * SCENE_BORDER,
         SCENE_HEIGHT + 2 * SCENE_BORDER,
     );
-    border.setAttribute("stroke", BORDER_COLOR);
+    border.setAttribute('stroke', BORDER_COLOR);
 
     var scene = svgRectangle(svg, SCENE_MARGIN, SCENE_MARGIN, SCENE_WIDTH, SCENE_HEIGHT);
-    scene.setAttribute("fill", SCENE_COLOR);
+    scene.setAttribute('fill', SCENE_COLOR);
 }
 
 function setViewbox(svg) {
-    svg.setAttribute("viewBox", "0 0 " + BACKGROUND_WIDTH + " " + BACKGROUND_HEIGHT);
+    svg.setAttribute('viewBox', '0 0 ' + BACKGROUND_WIDTH + ' ' + BACKGROUND_HEIGHT);
 }
 
 function logStatus(origin, status) {
-    console.log(origin + ": " + status);
+    console.log(origin + ': ' + status);
 
-    let span = document.createElement("span");
+    let span = document.createElement('span');
     span.appendChild(document.createTextNode(origin));
-    span.className = "origin";
+    span.className = 'origin';
 
-    let p = document.createElement("p");
+    let p = document.createElement('p');
     p.appendChild(span);
     p.appendChild(document.createTextNode(status));
 
@@ -123,13 +123,13 @@ function logStatus(origin, status) {
 }
 
 function logMain(status) {
-    logStatus("main", status);
+    logStatus('main', status);
 }
 
 function updateSceneCritters(scene, genomes) {
     var idx = 0;
 
-    logMain("Updating scene.");
+    logMain('Updating scene.');
 
     for (let genome of genomes) {
         if (idx < scene.critters.length) {
@@ -150,17 +150,17 @@ function handleWorkerMessage(scene, e) {
             updateSceneCritters(scene, payload);
             break;
         case messageType.LOG_STATUS:
-            logStatus("worker", payload);
+            logStatus('worker', payload);
             break;
         default:
-            console.warn("Unhandled message type: " + message.type);
+            console.warn('Unhandled message type: ' + message.type);
     }
 }
 
 function createWorker(scene) {
-    logMain("Starting worker.");
+    logMain('Starting worker.');
 
-    var worker = new Worker("critters-worker.js");
+    var worker = new Worker('critters-worker.js');
 
     worker.onmessage = function (e) {
         handleWorkerMessage(scene, e);
@@ -174,7 +174,7 @@ export function loadCritters(renderID, logID) {
         return;
     }
 
-    let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     setViewbox(svg);
     renderParent.appendChild(svg);
 

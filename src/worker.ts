@@ -42,11 +42,11 @@ import {
     TIME_STEP,
     UPDATE_INTERVAL,
     WORST_DISCARD,
-} from "./config";
-import { createCritter } from "./critter";
-import { makeBaby, randomGenome } from "./genome";
-import { createMessage, messageType } from "./message";
-import { createScene } from "./scene";
+} from './config';
+import { createCritter } from './critter';
+import { makeBaby, randomGenome } from './genome';
+import { createMessage, messageType } from './message';
+import { createScene } from './scene';
 
 const SIM_STEPS = (SIM_TIME * 1000) / TIME_STEP;
 
@@ -59,7 +59,7 @@ function logStatus(status) {
 }
 
 function startWorker() {
-    logStatus("Worker is alive!");
+    logStatus('Worker is alive!');
 
     let population = randomPopulation(POPULATION_SIZE);
     let updateDue = performance.now() + FIRST_UPDATE * MILLISECONDS_PER_SECOND;
@@ -108,18 +108,18 @@ function doUpdate(simResult, fitnessScore) {
         genomes.push(simResult[idx].genome);
     }
 
-    logStatus("Sending update. Fitness: " + fitnessScore.toFixed(3));
+    logStatus('Sending update. Fitness: ' + fitnessScore.toFixed(3));
 
     self.postMessage(createMessage(messageType.GENOME_UPDATE, genomes));
 }
 
 function logGeneration(generation, fitnessScore, duration) {
     logStatus(
-        "Generation: " +
+        'Generation: ' +
             generation.toString() +
-            " Duration (ms): " +
+            ' Duration (ms): ' +
             Math.floor(duration).toString() +
-            " Fitness: " +
+            ' Fitness: ' +
             fitnessScore.toFixed(3),
     );
 }

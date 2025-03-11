@@ -32,8 +32,8 @@ import {
     FOOD_COLOR,
     FOOD_SIZE,
     FOOD_SPEED,
-} from "./config";
-import { svgCircle, svgRectangle } from "./main";
+} from './config';
+import { svgCircle, svgRectangle } from './main';
 
 function createBoing(speed, w, h) {
     var rand = Math.random();
@@ -115,12 +115,12 @@ export function createFood(w: number, h: number) {
 
         createSvg: function (svg) {
             this.circle = svgCircle(svg, boing.x, boing.y, FOOD_SIZE);
-            this.circle.setAttribute("fill", FOOD_COLOR);
+            this.circle.setAttribute('fill', FOOD_COLOR);
         },
 
         renderSvg: function (offsetX, offsetY) {
-            this.circle.setAttribute("cx", boing.x + offsetX);
-            this.circle.setAttribute("cy", boing.y + offsetY);
+            this.circle.setAttribute('cx', boing.x + offsetX);
+            this.circle.setAttribute('cy', boing.y + offsetY);
         },
 
         getKind: function () {
@@ -145,7 +145,7 @@ export function createDanger(w, h) {
     var boing = createBoing(DANGER_SPEED, w, h);
 
     function getTransform(x, y) {
-        return "translate(" + x + "," + y + ") rotate(45)";
+        return 'translate(' + x + ',' + y + ') rotate(45)';
     }
 
     return {
@@ -164,11 +164,11 @@ export function createDanger(w, h) {
                 DANGER_SIZE * Math.SQRT1_2,
             );
 
-            this.rect.setAttribute("fill", DANGER_COLOR);
+            this.rect.setAttribute('fill', DANGER_COLOR);
         },
 
         renderSvg: function (offsetX, offsetY) {
-            this.rect.setAttribute("transform", getTransform(boing.x + offsetX, boing.y + offsetY));
+            this.rect.setAttribute('transform', getTransform(boing.x + offsetX, boing.y + offsetY));
         },
 
         getKind: function () {

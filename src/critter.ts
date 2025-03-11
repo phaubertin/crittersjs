@@ -25,14 +25,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { computeBrainControl } from "./brain";
-import { BASE_SPEED_ANGULAR, BASE_SPEED_FORWARD, CRITTER_COLOR, CRITTER_SIZE } from "./config";
-import { svgCircle } from "./main";
+import { computeBrainControl } from './brain';
+import { BASE_SPEED_ANGULAR, BASE_SPEED_FORWARD, CRITTER_COLOR, CRITTER_SIZE } from './config';
+import { svgCircle } from './main';
 
 export function createCritter(w, h, genome) {
     function getTransform(x, y, angle) {
         var degAngle = (-angle * 180) / Math.PI;
-        return "translate(" + x + "," + y + ") rotate(" + degAngle + ")";
+        return 'translate(' + x + ',' + y + ') rotate(' + degAngle + ')';
     }
 
     return {
@@ -111,20 +111,20 @@ export function createCritter(w, h, genome) {
 
             this.head = svgCircle(svg, 0.6 * CRITTER_SIZE, 0, 0.4 * CRITTER_SIZE);
 
-            this.body.setAttribute("fill", CRITTER_COLOR);
-            this.head.setAttribute("fill", CRITTER_COLOR);
+            this.body.setAttribute('fill', CRITTER_COLOR);
+            this.head.setAttribute('fill', CRITTER_COLOR);
         },
 
         renderSvg: function (offsetX, offsetY) {
             this.body.setAttribute(
-                "transform",
+                'transform',
                 getTransform(this.x + offsetX, this.y + offsetY, this.angle),
             );
             this.head.setAttribute(
-                "transform",
+                'transform',
                 getTransform(this.x + offsetX, this.y + offsetY, this.angle),
             );
-            this.head.setAttribute("fill", this.genome.color);
+            this.head.setAttribute('fill', this.genome.color);
         },
 
         getX: function () {
