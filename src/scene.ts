@@ -125,15 +125,15 @@ export function createScene(width: number, height: number, doCreateCritters: boo
                 var zero2Pi = false;
             }
 
-            let foodIntensity = 0.0;
-            let foodAngle = 0.0;
-            let foodOdor = 0.0;
-            let dangerIntensity = 0.0;
-            let dangerAngle = 0.0;
-            let dangerOdor = 0.0;
-            let wallIntensity = 0.0;
-            let wallAngle = 0.0;
             let critterSizeSquared = CRITTER_SIZE * CRITTER_SIZE;
+            let dangerAngle = 0.0;
+            let dangerIntensity = 0.0;
+            let dangerOdor = 0.0;
+            let foodAngle = 0.0;
+            let foodIntensity = 0.0;
+            let foodOdor = 0.0;
+            let wallAngle = 0.0;
+            let wallIntensity = 0.0;
 
             for (let thing of things) {
                 let kind = thing.getKind();
@@ -142,7 +142,7 @@ export function createScene(width: number, height: number, doCreateCritters: boo
                 let dy = thing.getY() - critter.getY();
                 let distanceSquared = dx * dx + dy * dy;
 
-                /* Comparing distances is equivalent to comparing distances. Not
+                /* Comparing squared distances is equivalent to comparing distances. Not
                  * computing the square root is faster. */
                 if (distanceSquared < critterSizeSquared) {
                     if (kind == ThingKind.food) {
@@ -281,14 +281,14 @@ export function createScene(width: number, height: number, doCreateCritters: boo
             }
 
             return {
-                foodIntensity: foodIntensity,
-                foodAngle: foodAngle,
-                foodOdor: foodOdor,
-                dangerIntensity: dangerIntensity,
-                dangerAngle: dangerAngle,
-                dangerOdor: dangerOdor,
-                wallIntensity: wallIntensity,
-                wallAngle: wallAngle,
+                dangerAngle,
+                dangerIntensity,
+                dangerOdor,
+                foodAngle,
+                foodIntensity,
+                foodOdor,
+                wallAngle,
+                wallIntensity,
             };
         },
 
