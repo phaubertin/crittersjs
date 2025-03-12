@@ -25,33 +25,38 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Genome } from './genome';
+import { MessageType, publishMessage } from './message';
 
-export enum MessageType {
-    logStatus = 'log-status',
-    updateGenome = 'update-genome',
+export interface Logger {
+    log(status: string): void;
 }
 
-interface BaseMessage {
-    type: MessageType;
+export class MessageLogger implements Logger {
+    log(status: string): void {
+        publishMessage({
+            type: MessageType.logStatus,
+            status,
+        });
+    }
 }
 
-export interface LogStatusMessage extends BaseMessage {
-    type: MessageType.logStatus;
-    status: string;
-}
+export class MainLogger implements Logger {
+    constructor(
+        private readonly parent: HTMLElement,
+        private readonly origin: string,
+    ) {}
 
-export interface UpdateGenomeMessage extends BaseMessage {
-    type: MessageType.updateGenome;
-    genomes: Genome[];
-}
+    log(status: string): void {
+        console.log(this.origin + ': ' + status);
 
-export type Message = LogStatusMessage | UpdateGenomeMessage;
+        let span = document.createElement('span');
+        span.appendChild(document.createTextNode(this.origin));
+        span.className = 'origin';
 
-export function publishMessage<T extends Message>(message: T): void {
-    self.postMessage(JSON.stringify(message));
-}
+        let p = document.createElement('p');
+        p.appendChild(span);
+        p.appendChild(document.createTextNode(status));
 
-export function deserializeMessage(message: string): Message {
-    return JSON.parse(message);
+        this.parent.appendChild(p);
+    }
 }

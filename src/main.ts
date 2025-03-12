@@ -34,15 +34,15 @@ import {
     SCENE_MARGIN,
     SCENE_WIDTH,
 } from './config';
-import { getMessagePayload, messageType } from './message';
+import { Genome } from './genome';
+import { Logger, MainLogger } from './logging';
+import { deserializeMessage, MessageType } from './message';
 import { createScene } from './scene';
 import { SvgCanvas } from './svg';
 
 const BACKGROUND_WIDTH = SCENE_WIDTH + 2 * SCENE_MARGIN;
 
 const BACKGROUND_HEIGHT = SCENE_HEIGHT + 2 * SCENE_MARGIN;
-
-var logParent;
 
 /*  +--------------------------------------------------------------------------+
  *  |//////////////////////////////////////////////////////////////////////////|
@@ -76,29 +76,10 @@ function createBackground(svg: SvgCanvas) {
     scene.setFillColor(SCENE_COLOR);
 }
 
-function logStatus(origin, status) {
-    console.log(origin + ': ' + status);
+function updateSceneCritters(scene, genomes: Genome[], logger: Logger) {
+    let idx = 0;
 
-    let span = document.createElement('span');
-    span.appendChild(document.createTextNode(origin));
-    span.className = 'origin';
-
-    let p = document.createElement('p');
-    p.appendChild(span);
-    p.appendChild(document.createTextNode(status));
-
-    /* The logParent variable is global. */
-    logParent.appendChild(p);
-}
-
-function logMain(status) {
-    logStatus('main', status);
-}
-
-function updateSceneCritters(scene, genomes) {
-    var idx = 0;
-
-    logMain('Updating scene.');
+    logger.log('Updating scene.');
 
     for (let genome of genomes) {
         if (idx < scene.critters.length) {
@@ -110,31 +91,33 @@ function updateSceneCritters(scene, genomes) {
     }
 }
 
-function handleWorkerMessage(scene, e) {
-    let message = e.data;
-    let payload = getMessagePayload(message);
+function handleWorkerMessage(
+    scene,
+    mainLogger: Logger,
+    workerLogger: Logger,
+    e: MessageEvent<string>,
+) {
+    const message = deserializeMessage(e.data);
 
-    console.log(payload);
+    console.log(message);
 
     switch (message.type) {
-        case messageType.GENOME_UPDATE:
-            updateSceneCritters(scene, payload);
+        case MessageType.updateGenome:
+            updateSceneCritters(scene, message.genomes, mainLogger);
             break;
-        case messageType.LOG_STATUS:
-            logStatus('worker', payload);
+        case MessageType.logStatus:
+            workerLogger.log(message.status);
             break;
-        default:
-            console.warn('Unhandled message type: ' + message.type);
     }
 }
 
-function createWorker(scene) {
-    logMain('Starting worker.');
+function createWorker(scene, mainLogger: Logger, workerLogger: Logger) {
+    mainLogger.log('Starting worker.');
 
     var worker = new Worker('critters-worker.js');
 
     worker.onmessage = function (e) {
-        handleWorkerMessage(scene, e);
+        handleWorkerMessage(scene, mainLogger, workerLogger, e);
     };
 }
 
@@ -142,14 +125,19 @@ export function loadCritters(renderID, logID) {
     let renderParent = document.getElementById(renderID);
 
     if (!renderParent) {
+        console.error(`No '${renderID}' element (rendering parent)`);
+        return;
+    }
+
+    const logParent = document.getElementById(logID);
+
+    if (!logParent) {
+        console.error(`No '${logID}' element (logging parent)`);
         return;
     }
 
     const svg = SvgCanvas.create(renderParent);
     svg.setViewbox(BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
-
-    /* This variable is global. */
-    logParent = document.getElementById(logID);
 
     createBackground(svg);
     const scene = createScene(SCENE_WIDTH, SCENE_HEIGHT, true);
@@ -161,5 +149,8 @@ export function loadCritters(renderID, logID) {
         scene.renderSvg(SCENE_MARGIN, SCENE_MARGIN);
     }, 20);
 
-    createWorker(scene);
+    const mainLogger = new MainLogger(logParent, 'main');
+    const workerLogger = new MainLogger(logParent, 'worker');
+
+    createWorker(scene, mainLogger, workerLogger);
 }
