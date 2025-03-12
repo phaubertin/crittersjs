@@ -105,7 +105,7 @@ export class Scene {
         }
 
         for (const critter of this.critters) {
-            let stimuli = this.computeStimuli(critter);
+            const stimuli = this.computeStimuli(critter);
 
             /* Stimuli object is null if critter died this round. */
             if (stimuli != null) {
@@ -260,7 +260,7 @@ export class Scene {
                     wallAngle = critterAngle * (1.0 / (Math.PI / 2));
                 }
             }
-        } else if (critterAngle < -Math.PI / 2) {
+        } else if (critterAngle < -Math.PI / 2 || critterAngle > Math.PI / 2) {
             /* left wall */
             const distance = -critter.getX() / Math.cos(critterAngle);
 
@@ -269,21 +269,9 @@ export class Scene {
                     (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
 
                 if (intensity > wallIntensity) {
+                    const sign = critterAngle < 0 ? -1 : 1;
                     wallIntensity = intensity;
-                    wallAngle = (critterAngle - Math.PI) * (1.0 / (Math.PI / 2));
-                }
-            }
-        } else if (critterAngle > Math.PI / 2) {
-            /* left wall */
-            const distance = -critter.getX() / Math.cos(critterAngle);
-
-            if (distance < VISION_DISTANCE_LIMIT) {
-                const intensity =
-                    (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
-
-                if (intensity > wallIntensity) {
-                    wallIntensity = intensity;
-                    wallAngle = (critterAngle + Math.PI) * (1.0 / (Math.PI / 2));
+                    wallAngle = (critterAngle + sign * Math.PI) * (1.0 / (Math.PI / 2));
                 }
             }
         }
