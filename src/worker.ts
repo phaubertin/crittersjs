@@ -41,15 +41,14 @@ import {
     UPDATE_INTERVAL,
     WORST_DISCARD,
 } from './config';
+import { MILLISECONDS_PER_SECOND } from './constants';
 import { Critter } from './critter';
 import { Genome, makeBaby, randomGenome } from './genome';
 import { Logger, MessageLogger } from './logging';
 import { MessageType, publishMessage } from './message';
-import { createScene } from './scene';
+import { Scene } from './scene';
 
 const SIM_STEPS = (SIM_TIME * 1000) / TIME_STEP;
-
-const MILLISECONDS_PER_SECOND = 1000;
 
 const logger: Logger = new MessageLogger();
 
@@ -179,7 +178,7 @@ function randomPopulation(size) {
 }
 
 function runSimulation(population) {
-    let scene = createScene(SCENE_WIDTH, SCENE_HEIGHT, false);
+    let scene = new Scene(SCENE_WIDTH, SCENE_HEIGHT, false);
     let result = [] as any[];
 
     /* Until all genomes in the population have been processed ... */

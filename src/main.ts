@@ -37,7 +37,7 @@ import {
 import { Genome } from './genome';
 import { Logger, MainLogger } from './logging';
 import { deserializeMessage, MessageType } from './message';
-import { createScene } from './scene';
+import { Scene } from './scene';
 import { SvgCanvas } from './svg';
 
 const BACKGROUND_WIDTH = SCENE_WIDTH + 2 * SCENE_MARGIN;
@@ -140,7 +140,7 @@ export function loadCritters(renderID, logID) {
     svg.setViewbox(BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
 
     createBackground(svg);
-    const scene = createScene(SCENE_WIDTH, SCENE_HEIGHT, true);
+    const scene = new Scene(SCENE_WIDTH, SCENE_HEIGHT, true);
 
     scene.createSvg(svg);
 

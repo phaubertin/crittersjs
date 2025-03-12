@@ -35,283 +35,290 @@ import {
     VISION_ANGLE_LIMIT,
     VISION_DISTANCE_LIMIT,
 } from './config';
+import { MILLISECONDS_PER_SECOND } from './constants';
 import { Critter } from './critter';
 import { randomGenome } from './genome';
 import { SvgCanvas } from './svg';
 import { Danger, Food, Thing, ThingKind } from './thing';
 
-export function createScene(width: number, height: number, doCreateCritters: boolean) {
-    const millisPerSecond = 1000;
-    var things: Thing[] = [];
-    var critters: Critter[] = [];
+export class Scene {
+    private readonly critters: Critter[];
+    private readonly things: Thing[];
+    private lastUpdate: DOMHighResTimeStamp;
 
-    for (var idx = 0; idx < NUM_FOOD; ++idx) {
-        things.push(new Food(width, height));
+    constructor(
+        private readonly width: number,
+        private readonly height: number,
+        doAddCritters: boolean,
+    ) {
+        this.critters = [];
+        this.things = [];
+
+        for (let idx = 0; idx < NUM_FOOD; ++idx) {
+            this.addThing(new Food(width, height));
+        }
+
+        for (let idx = 0; idx < NUM_DANGER; ++idx) {
+            this.addThing(new Danger(width, height));
+        }
+
+        /* For the displayed scene, critters are created when the scene is created.
+         * For simulation scenes used for training, critters are added to the scene,
+         * trained, then taken out and other critters are added to take their place,
+         * etc. */
+        if (doAddCritters) {
+            for (let idx = 0; idx < NUM_CRITTERS; ++idx) {
+                this.addCritter(new Critter(randomGenome(), width, height));
+            }
+        }
+
+        this.lastUpdate = performance.now();
     }
 
-    for (var idx = 0; idx < NUM_DANGER; ++idx) {
-        things.push(new Danger(width, height));
+    addCritter(critter: Critter): void {
+        this.critters.push(critter);
     }
 
-    /* For the displayed scene, critters are created when the scene is created.
-     * For simulation scenes used for training, critters are added to the scene,
-     * trained, then taken out and other critters are added to take their place,
-     * etc. */
-    if (doCreateCritters) {
-        for (var idx = 0; idx < NUM_CRITTERS; ++idx) {
-            critters.push(new Critter(randomGenome(), width, height));
+    addThing(thing: Thing): void {
+        this.things.push(thing);
+    }
+
+    harvestCritter(): Critter | null {
+        return this.critters.shift() ?? null;
+    }
+
+    updateScene(): void {
+        const now = performance.now();
+
+        this.updatePosition((now - this.lastUpdate) / MILLISECONDS_PER_SECOND);
+
+        this.lastUpdate = now;
+    }
+
+    updatePosition(timeDelta: number): void {
+        for (const thing of this.things) {
+            thing.updatePosition(timeDelta);
+        }
+
+        for (const critter of this.critters) {
+            critter.updatePosition(timeDelta);
+        }
+
+        for (const critter of this.critters) {
+            let stimuli = this.computeStimuli(critter);
+
+            /* Stimuli object is null if critter died this round. */
+            if (stimuli != null) {
+                critter.updateControl(stimuli);
+            }
         }
     }
 
-    return {
-        width,
+    /* Return value is a stimuli object if the critter is still alive or null
+     * otherwise. If it "died", its position is changed to a random one to
+     * simulate a new critter appearing elsewhere. */
+    private computeStimuli(critter: Critter): BrainStimuli | null {
+        /* We store angles in the range -pi..pi. If the critter is looking
+         * in a direction close to -pi or pi, we convert the range to 0..2*pi
+         * so we don't have to deal with the discontinuity. */
+        let critterAngle = critter.getAngle();
+        let zero2Pi: boolean;
 
-        height,
+        if (critterAngle > Math.PI / 2) {
+            zero2Pi = true;
+        } else if (critterAngle < -Math.PI / 2) {
+            critterAngle += 2 * Math.PI;
+            zero2Pi = true;
+        } else {
+            zero2Pi = false;
+        }
 
-        critters,
+        let critterSizeSquared = CRITTER_SIZE * CRITTER_SIZE;
+        let dangerAngle = 0.0;
+        let dangerIntensity = 0.0;
+        let dangerOdor = 0.0;
+        let foodAngle = 0.0;
+        let foodIntensity = 0.0;
+        let foodOdor = 0.0;
+        let wallAngle = 0.0;
+        let wallIntensity = 0.0;
 
-        lastUpdate: performance.now(),
+        for (let thing of this.things) {
+            const kind = thing.getKind();
 
-        addCritter: function (critter) {
-            this.critters.push(critter);
-        },
+            const dx = thing.getX() - critter.getX();
+            const dy = thing.getY() - critter.getY();
+            const distanceSquared = dx * dx + dy * dy;
 
-        harvestCritter: function () {
-            return this.critters.shift();
-        },
+            /* Comparing squared distances is equivalent to comparing distances. Not
+             * computing the square root is faster. */
+            if (distanceSquared < critterSizeSquared) {
+                if (kind == ThingKind.food) {
+                    critter.eat();
 
-        updateScene: function () {
-            var now = performance.now();
+                    /* simulate deleting the thing and adding a new one by
+                     * changing its position */
+                    this.setRandomPosition(thing);
+                    continue;
+                } else if (kind == ThingKind.danger) {
+                    critter.kill();
 
-            this.updatePosition((now - this.lastUpdate) / millisPerSecond);
-
-            this.lastUpdate = performance.now();
-        },
-
-        updatePosition: function (timeDelta) {
-            for (const thing of things) {
-                thing.updatePosition(timeDelta);
-            }
-
-            for (const critter of this.critters) {
-                critter.updatePosition(timeDelta);
-            }
-
-            for (const critter of this.critters) {
-                let stimuli = this.computeStimuli(critter);
-
-                /* Stimuli object is null if critter died this round. */
-                if (stimuli != null) {
-                    critter.updateControl(stimuli);
+                    /* "dead" for this round  */
+                    this.setRandomPosition(critter);
+                    return null;
                 }
             }
-        },
 
-        /* Return value is a stimuli object if the critter is still alive or null
-         * otherwise. If it "died", its position is changed to a random one to
-         * simulate a new critter appearing elsewhere. */
-        computeStimuli: function (critter: Critter): BrainStimuli | null {
-            let critterAngle = critter.getAngle();
+            if (
+                distanceSquared < VISION_DISTANCE_LIMIT * VISION_DISTANCE_LIMIT ||
+                distanceSquared < SCENT_DISTANCE_LIMIT * SCENT_DISTANCE_LIMIT
+            ) {
+                const distance = Math.sqrt(distanceSquared);
 
-            /* We store angles in the range -pi..pi. If the critter is looking
-             * in a direction close to -pi or pi, we convert the range to 0..2*pi
-             * so we don't have to deal with the discontinuity. */
-            if (critterAngle > Math.PI / 2) {
-                var zero2Pi = true;
-            } else if (critterAngle < -Math.PI / 2) {
-                critterAngle += 2 * Math.PI;
-                var zero2Pi = true;
-            } else {
-                var zero2Pi = false;
-            }
+                if (distance < VISION_DISTANCE_LIMIT) {
+                    let targetAngle = Math.atan2(-dy, dx);
 
-            let critterSizeSquared = CRITTER_SIZE * CRITTER_SIZE;
-            let dangerAngle = 0.0;
-            let dangerIntensity = 0.0;
-            let dangerOdor = 0.0;
-            let foodAngle = 0.0;
-            let foodIntensity = 0.0;
-            let foodOdor = 0.0;
-            let wallAngle = 0.0;
-            let wallIntensity = 0.0;
-
-            for (let thing of things) {
-                let kind = thing.getKind();
-
-                let dx = thing.getX() - critter.getX();
-                let dy = thing.getY() - critter.getY();
-                let distanceSquared = dx * dx + dy * dy;
-
-                /* Comparing squared distances is equivalent to comparing distances. Not
-                 * computing the square root is faster. */
-                if (distanceSquared < critterSizeSquared) {
-                    if (kind == ThingKind.food) {
-                        critter.eat();
-
-                        /* simulate deleting the thing and adding a new one by
-                         * changing its position */
-                        this.setRandomPosition(thing);
-                        continue;
-                    } else if (kind == ThingKind.danger) {
-                        critter.kill();
-
-                        /* "dead" for this round  */
-                        this.setRandomPosition(critter);
-                        return null;
-                    }
-                }
-
-                if (
-                    distanceSquared < VISION_DISTANCE_LIMIT * VISION_DISTANCE_LIMIT ||
-                    distanceSquared < SCENT_DISTANCE_LIMIT * SCENT_DISTANCE_LIMIT
-                ) {
-                    let distance = Math.sqrt(distanceSquared);
-
-                    if (distance < VISION_DISTANCE_LIMIT) {
-                        let targetAngle = Math.atan2(-dy, dx);
-
-                        if (zero2Pi && targetAngle < 0.0) {
-                            targetAngle += 2 * Math.PI;
-                        }
-
-                        let viewAngle = critterAngle - targetAngle;
-
-                        if (viewAngle < VISION_ANGLE_LIMIT && viewAngle > -VISION_ANGLE_LIMIT) {
-                            let intensity =
-                                (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
-
-                            if (kind == ThingKind.food) {
-                                if (intensity > foodIntensity) {
-                                    foodIntensity = intensity;
-                                    foodAngle = viewAngle * (1.0 / VISION_ANGLE_LIMIT);
-                                }
-                            } else if (kind == ThingKind.danger) {
-                                if (intensity > dangerIntensity) {
-                                    dangerIntensity = intensity;
-                                    dangerAngle = viewAngle * (1.0 / VISION_ANGLE_LIMIT);
-                                }
-                            }
-                        }
+                    if (zero2Pi && targetAngle < 0.0) {
+                        targetAngle += 2 * Math.PI;
                     }
 
-                    if (distance < SCENT_DISTANCE_LIMIT) {
-                        let intensity =
-                            (SCENT_DISTANCE_LIMIT - distance) * (1.0 / SCENT_DISTANCE_LIMIT);
+                    const viewAngle = critterAngle - targetAngle;
+
+                    if (viewAngle < VISION_ANGLE_LIMIT && viewAngle > -VISION_ANGLE_LIMIT) {
+                        const intensity =
+                            (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
 
                         if (kind == ThingKind.food) {
-                            if (intensity > foodOdor) {
-                                foodOdor += intensity;
+                            if (intensity > foodIntensity) {
+                                foodIntensity = intensity;
+                                foodAngle = viewAngle * (1.0 / VISION_ANGLE_LIMIT);
                             }
                         } else if (kind == ThingKind.danger) {
-                            if (intensity > dangerOdor) {
-                                dangerOdor += intensity;
+                            if (intensity > dangerIntensity) {
+                                dangerIntensity = intensity;
+                                dangerAngle = viewAngle * (1.0 / VISION_ANGLE_LIMIT);
                             }
                         }
                     }
                 }
-            }
 
-            if (critterAngle > 0.0) {
-                /* top wall */
-                let distance = critter.getY() / Math.sin(critterAngle);
+                if (distance < SCENT_DISTANCE_LIMIT) {
+                    const intensity =
+                        (SCENT_DISTANCE_LIMIT - distance) * (1.0 / SCENT_DISTANCE_LIMIT);
 
-                if (distance < VISION_DISTANCE_LIMIT) {
-                    let intensity =
-                        (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
-
-                    if (intensity > wallIntensity) {
-                        wallIntensity = intensity;
-                        wallAngle = (critterAngle - Math.PI / 2) * (1.0 / (Math.PI / 2));
-                    }
-                }
-            } else if (critterAngle < -0.0) {
-                /* bottom wall */
-                let distance = (critter.getY() - this.height) / Math.sin(critterAngle);
-
-                if (distance < VISION_DISTANCE_LIMIT) {
-                    let intensity =
-                        (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
-
-                    if (intensity > wallIntensity) {
-                        wallIntensity = intensity;
-                        wallAngle = (Math.PI / 2 + critterAngle) * (1.0 / (Math.PI / 2));
+                    if (kind == ThingKind.food) {
+                        if (intensity > foodOdor) {
+                            foodOdor += intensity;
+                        }
+                    } else if (kind == ThingKind.danger) {
+                        if (intensity > dangerOdor) {
+                            dangerOdor += intensity;
+                        }
                     }
                 }
             }
+        }
 
-            if (critterAngle > -Math.PI / 2 && critterAngle < Math.PI / 2) {
-                /* right wall */
-                let distance = (this.width - critter.getX()) / Math.cos(critterAngle);
+        if (critterAngle > 0.0) {
+            /* top wall */
+            const distance = critter.getY() / Math.sin(critterAngle);
 
-                if (distance < VISION_DISTANCE_LIMIT) {
-                    let intensity =
-                        (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
+            if (distance < VISION_DISTANCE_LIMIT) {
+                const intensity =
+                    (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
 
-                    if (intensity > wallIntensity) {
-                        wallIntensity = intensity;
-                        wallAngle = critterAngle * (1.0 / (Math.PI / 2));
-                    }
-                }
-            } else if (critterAngle < -Math.PI / 2) {
-                /* left wall */
-                let distance = -critter.getX() / Math.cos(critterAngle);
-
-                if (distance < VISION_DISTANCE_LIMIT) {
-                    let intensity =
-                        (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
-
-                    if (intensity > wallIntensity) {
-                        wallIntensity = intensity;
-                        wallAngle = (critterAngle - Math.PI) * (1.0 / (Math.PI / 2));
-                    }
-                }
-            } else if (critterAngle > Math.PI / 2) {
-                /* left wall */
-                let distance = -critter.getX() / Math.cos(critterAngle);
-
-                if (distance < VISION_DISTANCE_LIMIT) {
-                    let intensity =
-                        (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
-
-                    if (intensity > wallIntensity) {
-                        wallIntensity = intensity;
-                        wallAngle = (critterAngle + Math.PI) * (1.0 / (Math.PI / 2));
-                    }
+                if (intensity > wallIntensity) {
+                    wallIntensity = intensity;
+                    wallAngle = (critterAngle - Math.PI / 2) * (1.0 / (Math.PI / 2));
                 }
             }
+        } else if (critterAngle < -0.0) {
+            /* bottom wall */
+            const distance = (critter.getY() - this.height) / Math.sin(critterAngle);
 
-            return {
-                dangerAngle,
-                dangerIntensity,
-                dangerOdor,
-                foodAngle,
-                foodIntensity,
-                foodOdor,
-                wallAngle,
-                wallIntensity,
-            };
-        },
+            if (distance < VISION_DISTANCE_LIMIT) {
+                const intensity =
+                    (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
 
-        setRandomPosition: function (thing) {
-            thing.setPosition(this.width * Math.random(), this.height * Math.random());
-        },
+                if (intensity > wallIntensity) {
+                    wallIntensity = intensity;
+                    wallAngle = (Math.PI / 2 + critterAngle) * (1.0 / (Math.PI / 2));
+                }
+            }
+        }
 
-        createSvg: function (svg: SvgCanvas) {
-            for (const thing of things) {
-                thing.createSvg(svg);
-            }
-            for (const critter of this.critters) {
-                critter.createSvg(svg);
-            }
-        },
+        if (critterAngle > -Math.PI / 2 && critterAngle < Math.PI / 2) {
+            /* right wall */
+            const distance = (this.width - critter.getX()) / Math.cos(critterAngle);
 
-        renderSvg: function (offsetX, offsetY) {
-            for (const thing of things) {
-                thing.renderSvg(offsetX, offsetY);
+            if (distance < VISION_DISTANCE_LIMIT) {
+                const intensity =
+                    (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
+
+                if (intensity > wallIntensity) {
+                    wallIntensity = intensity;
+                    wallAngle = critterAngle * (1.0 / (Math.PI / 2));
+                }
             }
-            for (const critter of this.critters) {
-                critter.renderSvg(offsetX, offsetY);
+        } else if (critterAngle < -Math.PI / 2) {
+            /* left wall */
+            const distance = -critter.getX() / Math.cos(critterAngle);
+
+            if (distance < VISION_DISTANCE_LIMIT) {
+                const intensity =
+                    (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
+
+                if (intensity > wallIntensity) {
+                    wallIntensity = intensity;
+                    wallAngle = (critterAngle - Math.PI) * (1.0 / (Math.PI / 2));
+                }
             }
-        },
-    };
+        } else if (critterAngle > Math.PI / 2) {
+            /* left wall */
+            const distance = -critter.getX() / Math.cos(critterAngle);
+
+            if (distance < VISION_DISTANCE_LIMIT) {
+                const intensity =
+                    (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
+
+                if (intensity > wallIntensity) {
+                    wallIntensity = intensity;
+                    wallAngle = (critterAngle + Math.PI) * (1.0 / (Math.PI / 2));
+                }
+            }
+        }
+
+        return {
+            dangerAngle,
+            dangerIntensity,
+            dangerOdor,
+            foodAngle,
+            foodIntensity,
+            foodOdor,
+            wallAngle,
+            wallIntensity,
+        };
+    }
+
+    private setRandomPosition(thing: Thing | Critter): void {
+        thing.setPosition(this.width * Math.random(), this.height * Math.random());
+    }
+
+    createSvg(svg: SvgCanvas): void {
+        for (const thing of this.things) {
+            thing.createSvg(svg);
+        }
+        for (const critter of this.critters) {
+            critter.createSvg(svg);
+        }
+    }
+
+    renderSvg(offsetX: number, offsetY: number): void {
+        for (const thing of this.things) {
+            thing.renderSvg(offsetX, offsetY);
+        }
+        for (const critter of this.critters) {
+            critter.renderSvg(offsetX, offsetY);
+        }
+    }
 }
