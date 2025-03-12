@@ -37,7 +37,7 @@ import {
 import { createCritter } from './critter';
 import { randomGenome } from './genome';
 import { SvgCanvas } from './svg';
-import { createDanger, createFood, thingKind } from './thing';
+import { Danger, Food, ThingKind } from './thing';
 
 export function createScene(w, h, doCreateCritters) {
     const millisPerSecond = 1000;
@@ -45,11 +45,11 @@ export function createScene(w, h, doCreateCritters) {
     var critters = [] as any[];
 
     for (var idx = 0; idx < NUM_FOOD; ++idx) {
-        things.push(createFood(w, h));
+        things.push(new Food(w, h));
     }
 
     for (var idx = 0; idx < NUM_DANGER; ++idx) {
-        things.push(createDanger(w, h));
+        things.push(new Danger(w, h));
     }
 
     /* For the displayed scene, critters are created when the scene is created.
@@ -144,14 +144,14 @@ export function createScene(w, h, doCreateCritters) {
                 /* Comparing distances is equivalent to comparing distances. Not
                  * computing the square root is faster. */
                 if (distanceSquared < critterSizeSquared) {
-                    if (kind == thingKind.FOOD) {
+                    if (kind == ThingKind.food) {
                         ++critter.foodCount;
 
                         /* simulate deleting the thing and adding a new one by
                          * changing its position */
                         this.setRandomPosition(thing);
                         continue;
-                    } else if (kind == thingKind.DANGER) {
+                    } else if (kind == ThingKind.danger) {
                         ++critter.dangerCount;
 
                         /* "dead" for this round  */
@@ -179,12 +179,12 @@ export function createScene(w, h, doCreateCritters) {
                             let intensity =
                                 (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
 
-                            if (kind == thingKind.FOOD) {
+                            if (kind == ThingKind.food) {
                                 if (intensity > foodIntensity) {
                                     foodIntensity = intensity;
                                     foodAngle = viewAngle * (1.0 / VISION_ANGLE_LIMIT);
                                 }
-                            } else if (kind == thingKind.DANGER) {
+                            } else if (kind == ThingKind.danger) {
                                 if (intensity > dangerIntensity) {
                                     dangerIntensity = intensity;
                                     dangerAngle = viewAngle * (1.0 / VISION_ANGLE_LIMIT);
@@ -197,11 +197,11 @@ export function createScene(w, h, doCreateCritters) {
                         let intensity =
                             (SCENT_DISTANCE_LIMIT - distance) * (1.0 / SCENT_DISTANCE_LIMIT);
 
-                        if (kind == thingKind.FOOD) {
+                        if (kind == ThingKind.food) {
                             if (intensity > foodOdor) {
                                 foodOdor += intensity;
                             }
-                        } else if (kind == thingKind.DANGER) {
+                        } else if (kind == ThingKind.danger) {
                             if (intensity > dangerOdor) {
                                 dangerOdor += intensity;
                             }

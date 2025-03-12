@@ -25,6 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { Boing } from './boing';
 import {
     DANGER_COLOR,
     DANGER_SIZE,
@@ -35,150 +36,95 @@ import {
 } from './config';
 import { SvgCanvas, SvgShape } from './svg';
 
-function createBoing(speed, w, h) {
-    var rand = Math.random();
+export enum ThingKind {
+    food,
+    danger,
+}
 
-    if (rand < 0.25) {
-        var goLeft = false;
-        var goDown = false;
-    } else if (rand < 0.5) {
-        var goLeft = false;
-        var goDown = true;
-    } else if (rand < 0.75) {
-        var goLeft = true;
-        var goDown = false;
-    } else {
-        var goLeft = true;
-        var goDown = true;
+export class Food {
+    private boing: Boing;
+    private circle: SvgShape | undefined;
+
+    constructor(width: number, height: number) {
+        this.boing = new Boing(width, height, FOOD_SPEED);
     }
 
-    return {
-        speedMult: speed * Math.SQRT1_2,
-        x: w * Math.random(),
-        y: h * Math.random(),
-        goLeft: goLeft,
-        goDown: goDown,
+    getKind(): ThingKind.food {
+        return ThingKind.food;
+    }
 
-        updatePosition: function (timeDelta) {
-            var deltaXY = timeDelta * this.speedMult;
+    setPosition(x: number, y: number): void {
+        this.boing.setPosition(x, y);
+    }
 
-            if (this.goLeft) {
-                this.x += deltaXY;
-            } else {
-                this.x -= deltaXY;
-            }
+    updatePosition(timeDelta: number): void {
+        this.boing.updatePosition(timeDelta);
+    }
 
-            if (this.goDown) {
-                this.y += deltaXY;
-            } else {
-                this.y -= deltaXY;
-            }
+    getX(): number {
+        return this.boing.getX();
+    }
 
-            if (this.x >= w) {
-                this.x = w - 1.0;
-                this.goLeft = false;
-            } else if (this.x < 0) {
-                this.x = 0;
-                this.goLeft = true;
-            }
+    getY(): number {
+        return this.boing.getY();
+    }
 
-            if (this.y >= h) {
-                this.y = h - 1.0;
-                this.goDown = false;
-            } else if (this.y < 0) {
-                this.y = 0;
-                this.goDown = true;
-            }
-        },
+    createSvg(svg: SvgCanvas): void {
+        this.circle = svg.addCircle(0, 0, FOOD_SIZE);
+        this.circle.setFillColor(FOOD_COLOR);
+    }
 
-        setPosition: function (x, y) {
-            this.x = x;
-            this.y = y;
-        },
-    };
+    renderSvg(offsetX: number, offsetY: number): void {
+        if (!this.circle) {
+            return;
+        }
+        this.circle.setTranslate(this.boing.getX() + offsetX, this.boing.getY() + offsetY);
+    }
 }
 
-export const thingKind = {
-    FOOD: 1,
-    DANGER: 2,
-};
+export class Danger {
+    private boing: Boing;
+    private rect: SvgShape | undefined;
 
-export function createFood(w: number, h: number) {
-    var boing = createBoing(FOOD_SPEED, w, h);
+    constructor(width: number, height: number) {
+        this.boing = new Boing(width, height, DANGER_SPEED);
+    }
 
-    return {
-        circle: undefined as unknown as SvgShape,
+    getKind(): ThingKind.danger {
+        return ThingKind.danger;
+    }
 
-        updatePosition: function (timeDelta) {
-            boing.updatePosition(timeDelta);
-        },
+    setPosition(x: number, y: number): void {
+        this.boing.setPosition(x, y);
+    }
 
-        createSvg: function (svg: SvgCanvas) {
-            this.circle = svg.addCircle(0, 0, FOOD_SIZE);
-            this.circle.setFillColor(FOOD_COLOR);
-        },
+    updatePosition(timeDelta: number): void {
+        this.boing.updatePosition(timeDelta);
+    }
 
-        renderSvg: function (offsetX, offsetY) {
-            this.circle.setTranslate(boing.x + offsetX, boing.y + offsetY);
-        },
+    getX(): number {
+        return this.boing.getX();
+    }
 
-        getKind: function () {
-            return thingKind.FOOD;
-        },
+    getY(): number {
+        return this.boing.getY();
+    }
 
-        getX: function () {
-            return boing.x;
-        },
+    createSvg(svg: SvgCanvas): void {
+        this.rect = svg.addRectangle(
+            0 - DANGER_SIZE / 2,
+            0 - DANGER_SIZE / 2,
+            DANGER_SIZE * Math.SQRT1_2,
+            DANGER_SIZE * Math.SQRT1_2,
+        );
+        this.rect.setFillColor(DANGER_COLOR);
+        this.rect.setRotate(45);
+    }
 
-        getY: function () {
-            return boing.y;
-        },
-
-        setPosition: function (x, y) {
-            boing.setPosition(x, y);
-        },
-    };
-}
-
-export function createDanger(w, h) {
-    var boing = createBoing(DANGER_SPEED, w, h);
-
-    return {
-        rect: undefined as unknown as SvgShape,
-
-        updatePosition: function (timeDelta) {
-            boing.updatePosition(timeDelta);
-        },
-
-        createSvg: function (svg: SvgCanvas) {
-            this.rect = svg.addRectangle(
-                0 - DANGER_SIZE / 2,
-                0 - DANGER_SIZE / 2,
-                DANGER_SIZE * Math.SQRT1_2,
-                DANGER_SIZE * Math.SQRT1_2,
-            );
-            this.rect.setFillColor(DANGER_COLOR);
-            this.rect.setRotate(45);
-        },
-
-        renderSvg: function (offsetX, offsetY) {
-            this.rect.setTranslate(boing.x + offsetX, boing.y + offsetY);
-        },
-
-        getKind: function () {
-            return thingKind.DANGER;
-        },
-
-        getX: function () {
-            return boing.x;
-        },
-
-        getY: function () {
-            return boing.y;
-        },
-
-        setPosition: function (x, y) {
-            boing.setPosition(x, y);
-        },
-    };
+    renderSvg(offsetX: number, offsetY: number): void {
+        if (!this.rect) {
+            return;
+        }
+        this.rect.setTranslate(this.boing.getX() + offsetX, this.boing.getY() + offsetY);
+    }
 }
