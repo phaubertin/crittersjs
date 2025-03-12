@@ -32,12 +32,12 @@ export class Boing {
     private y: number;
 
     constructor(
-        private readonly width: number,
-        private readonly height: number,
+        private readonly sceneWidth: number,
+        private readonly sceneHeight: number,
         private readonly speed: number,
     ) {
-        this.x = width * Math.random();
-        this.y = height * Math.random();
+        this.x = sceneWidth * Math.random();
+        this.y = sceneHeight * Math.random();
 
         const rand = Math.random();
 
@@ -71,16 +71,16 @@ export class Boing {
             this.y -= deltaXY;
         }
 
-        if (this.x >= this.width) {
-            this.x = this.width - 1.0;
+        if (this.x >= this.sceneWidth) {
+            this.x = this.sceneWidth - 1.0;
             this.goLeft = false;
         } else if (this.x < 0) {
             this.x = 0;
             this.goLeft = true;
         }
 
-        if (this.y >= this.height) {
-            this.y = this.height - 1.0;
+        if (this.y >= this.sceneHeight) {
+            this.y = this.sceneHeight - 1.0;
             this.goDown = false;
         } else if (this.y < 0) {
             this.y = 0;

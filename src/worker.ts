@@ -43,7 +43,7 @@ import {
     UPDATE_INTERVAL,
     WORST_DISCARD,
 } from './config';
-import { createCritter } from './critter';
+import { Critter } from './critter';
 import { Genome, makeBaby, randomGenome } from './genome';
 import { Logger, MessageLogger } from './logging';
 import { MessageType, publishMessage } from './message';
@@ -180,10 +180,6 @@ function randomPopulation(size) {
     return population;
 }
 
-function computeFitness(critter) {
-    return FOOD_COST * critter.foodCount + DANGER_COST * critter.dangerCount;
-}
-
 function runSimulation(population) {
     let scene = createScene(SCENE_WIDTH, SCENE_HEIGHT, false);
     let result = [] as any[];
@@ -192,7 +188,7 @@ function runSimulation(population) {
     for (let popIndex = 0; popIndex < population.length /* nothing */; ) {
         /* ... add at most NUM_CRITTERS genomes from the remaining ones to the scene. */
         for (let idx = 0; idx < NUM_CRITTERS && popIndex < population.length; ++idx, ++popIndex) {
-            scene.addCritter(createCritter(SCENE_WIDTH, SCENE_HEIGHT, population[popIndex]));
+            scene.addCritter(new Critter(population[popIndex], SCENE_WIDTH, SCENE_HEIGHT));
         }
 
         /* simulate scene */
@@ -205,8 +201,8 @@ function runSimulation(population) {
 
         while (critter != null) {
             result.push({
-                fitness: computeFitness(critter),
-                genome: critter.genome,
+                fitness: critter.computeFitness(),
+                genome: critter.getGenome(),
             });
 
             critter = scene.harvestCritter();

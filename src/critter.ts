@@ -25,115 +25,143 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { computeBrainControl } from './brain';
-import { BASE_SPEED_ANGULAR, BASE_SPEED_FORWARD, CRITTER_COLOR, CRITTER_SIZE } from './config';
+import { Brain, BrainControlOutput, BrainStimuli } from './brain';
+import {
+    BASE_SPEED_ANGULAR,
+    BASE_SPEED_FORWARD,
+    CRITTER_COLOR,
+    CRITTER_SIZE,
+    DANGER_COST,
+    FOOD_COST,
+} from './config';
 import { Genome } from './genome';
 import { SvgCanvas, SvgShape } from './svg';
 
-export function createCritter(w: number, h: number, genome: Genome) {
-    return {
-        head: undefined as unknown as SvgShape,
+export class Critter {
+    private x: number;
+    private y: number;
+    private angle: number;
+    private ateFoodCount: number;
+    private diedCount: number;
+    private brainControl: BrainControlOutput;
+    private head: SvgShape | undefined;
+    private body: SvgShape | undefined;
 
-        body: undefined as unknown as SvgShape,
+    constructor(
+        private readonly genome: Genome,
+        private readonly sceneWidth: number,
+        private readonly sceneHeight: number,
+    ) {
+        this.x = sceneWidth * Math.random();
+        this.y = sceneHeight * Math.random();
+        this.angle = 2.0 * Math.PI * (Math.random() - 0.5);
+        this.ateFoodCount = 0;
+        this.diedCount = 0;
+        this.brainControl = {
+            leftSpeed: 0,
+            rightSpeed: 0,
+        };
+    }
 
-        x: w * Math.random(),
+    eat(): void {
+        ++this.ateFoodCount;
+    }
 
-        y: h * Math.random(),
+    kill(): void {
+        ++this.diedCount;
+    }
 
-        /* Range: -pi..pi */
-        angle: 2.0 * Math.PI * (Math.random() - 0.5),
+    computeFitness(): number {
+        return FOOD_COST * this.ateFoodCount + DANGER_COST * this.diedCount;
+    }
 
-        genome: genome,
+    updateControl(stimuli: BrainStimuli): void {
+        this.brainControl = Brain.computeControl(this.genome, stimuli);
+    }
 
-        brainControl: {
-            leftSpeed: 0.0,
-            rightSpeed: 0.0,
-        },
+    updatePosition(timeDelta: number): void {
+        /* Update position. */
 
-        foodCount: 0,
+        let speed =
+            BASE_SPEED_FORWARD *
+            /* Arithmetic mean */
+            (this.brainControl.rightSpeed + this.brainControl.leftSpeed) *
+            0.5;
 
-        dangerCount: 0,
+        let distance = timeDelta * speed;
+        let x = this.x + Math.cos(this.angle) * distance;
+        let y = this.y - Math.sin(this.angle) * distance;
 
-        updatePosition: function (timeDelta) {
-            /* Update position. */
+        if (x < 0.0) {
+            x = 0.0;
+        } else if (x >= this.sceneWidth) {
+            x = this.sceneWidth - 1;
+        }
 
-            let speed =
-                BASE_SPEED_FORWARD *
-                /* Arithmetic mean */
-                (this.brainControl.rightSpeed + this.brainControl.leftSpeed) *
-                0.5;
+        if (y < 0.0) {
+            y = 0.0;
+        } else if (y >= this.sceneHeight) {
+            y = this.sceneHeight - 1;
+        }
 
-            let distance = timeDelta * speed;
-            let x = this.x + Math.cos(this.angle) * distance;
-            let y = this.y - Math.sin(this.angle) * distance;
+        this.setPosition(x, y);
 
-            if (x < 0.0) {
-                x = 0.0;
-            } else if (x >= w) {
-                x = w - 1;
-            }
+        /* Update angle. */
 
-            if (y < 0.0) {
-                y = 0.0;
-            } else if (y >= h) {
-                y = h - 1;
-            }
+        let omega =
+            BASE_SPEED_ANGULAR * (this.brainControl.rightSpeed - this.brainControl.leftSpeed);
+        let deltaAngle = timeDelta * omega;
 
-            this.setPosition(x, y);
+        this.angle += deltaAngle;
 
-            /* Update angle. */
+        while (this.angle < -Math.PI) {
+            this.angle += 2 * Math.PI;
+        }
 
-            let omega =
-                BASE_SPEED_ANGULAR * (this.brainControl.rightSpeed - this.brainControl.leftSpeed);
-            let deltaAngle = timeDelta * omega;
+        while (this.angle > Math.PI) {
+            this.angle -= 2 * Math.PI;
+        }
+    }
 
-            this.angle += deltaAngle;
+    setPosition(x: number, y: number): void {
+        this.x = x;
+        this.y = y;
+    }
 
-            while (this.angle < -Math.PI) {
-                this.angle += 2 * Math.PI;
-            }
+    getX(): number {
+        return this.x;
+    }
 
-            while (this.angle > Math.PI) {
-                this.angle -= 2 * Math.PI;
-            }
-        },
+    getY(): number {
+        return this.y;
+    }
 
-        updateBrainControl: function (stimuli) {
-            this.brainControl = computeBrainControl(this.genome, stimuli);
-        },
+    getAngle(): number {
+        return this.angle;
+    }
 
-        createSvg: function (svg: SvgCanvas) {
-            this.body = svg.addCircle(0 - 0.3 * CRITTER_SIZE, 0, 0.7 * CRITTER_SIZE);
-            this.head = svg.addCircle(0.6 * CRITTER_SIZE, 0, 0.4 * CRITTER_SIZE);
+    getGenome(): Genome {
+        return this.genome;
+    }
 
-            this.body.setFillColor(CRITTER_COLOR);
-            this.head.setFillColor(CRITTER_COLOR);
-        },
+    createSvg(svg: SvgCanvas): void {
+        this.body = svg.addCircle(0 - 0.3 * CRITTER_SIZE, 0, 0.7 * CRITTER_SIZE);
+        this.head = svg.addCircle(0.6 * CRITTER_SIZE, 0, 0.4 * CRITTER_SIZE);
 
-        renderSvg: function (offsetX, offsetY) {
-            const degAngle = (-this.angle * 180) / Math.PI;
-            this.body.setTranslate(this.x + offsetX, this.y + offsetY);
-            this.head.setTranslate(this.x + offsetX, this.y + offsetY);
-            this.body.setRotate(degAngle);
-            this.head.setRotate(degAngle);
-            this.head.setFillColor(this.genome.color);
-        },
+        this.body.setFillColor(CRITTER_COLOR);
+        this.head.setFillColor(CRITTER_COLOR);
+    }
 
-        getX: function () {
-            return this.x;
-        },
+    renderSvg(offsetX: number, offsetY: number): void {
+        if (!(this.head && this.body)) {
+            return;
+        }
 
-        getY: function () {
-            return this.y;
-        },
-
-        getAngle() {
-            return this.angle;
-        },
-
-        setPosition: function (x, y) {
-            this.x = x;
-            this.y = y;
-        },
-    };
+        const degAngle = (-this.angle * 180) / Math.PI;
+        this.body.setTranslate(this.x + offsetX, this.y + offsetY);
+        this.head.setTranslate(this.x + offsetX, this.y + offsetY);
+        this.body.setRotate(degAngle);
+        this.head.setRotate(degAngle);
+        this.head.setFillColor(this.genome.color);
+    }
 }

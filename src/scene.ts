@@ -25,6 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { BrainStimuli } from './brain';
 import {
     CRITTER_SIZE,
     NUM_CRITTERS,
@@ -34,22 +35,22 @@ import {
     VISION_ANGLE_LIMIT,
     VISION_DISTANCE_LIMIT,
 } from './config';
-import { createCritter } from './critter';
+import { Critter } from './critter';
 import { randomGenome } from './genome';
 import { SvgCanvas } from './svg';
-import { Danger, Food, ThingKind } from './thing';
+import { Danger, Food, Thing, ThingKind } from './thing';
 
-export function createScene(w, h, doCreateCritters) {
+export function createScene(width: number, height: number, doCreateCritters: boolean) {
     const millisPerSecond = 1000;
-    var things = [] as any[];
-    var critters = [] as any[];
+    var things: Thing[] = [];
+    var critters: Critter[] = [];
 
     for (var idx = 0; idx < NUM_FOOD; ++idx) {
-        things.push(new Food(w, h));
+        things.push(new Food(width, height));
     }
 
     for (var idx = 0; idx < NUM_DANGER; ++idx) {
-        things.push(new Danger(w, h));
+        things.push(new Danger(width, height));
     }
 
     /* For the displayed scene, critters are created when the scene is created.
@@ -58,16 +59,16 @@ export function createScene(w, h, doCreateCritters) {
      * etc. */
     if (doCreateCritters) {
         for (var idx = 0; idx < NUM_CRITTERS; ++idx) {
-            critters.push(createCritter(w, h, randomGenome()));
+            critters.push(new Critter(randomGenome(), width, height));
         }
     }
 
     return {
-        width: w,
+        width,
 
-        height: h,
+        height,
 
-        critters: critters as any[],
+        critters,
 
         lastUpdate: performance.now(),
 
@@ -101,7 +102,7 @@ export function createScene(w, h, doCreateCritters) {
 
                 /* Stimuli object is null if critter died this round. */
                 if (stimuli != null) {
-                    critter.updateBrainControl(stimuli);
+                    critter.updateControl(stimuli);
                 }
             }
         },
@@ -109,7 +110,7 @@ export function createScene(w, h, doCreateCritters) {
         /* Return value is a stimuli object if the critter is still alive or null
          * otherwise. If it "died", its position is changed to a random one to
          * simulate a new critter appearing elsewhere. */
-        computeStimuli: function (critter) {
+        computeStimuli: function (critter: Critter): BrainStimuli | null {
             let critterAngle = critter.getAngle();
 
             /* We store angles in the range -pi..pi. If the critter is looking
@@ -145,14 +146,14 @@ export function createScene(w, h, doCreateCritters) {
                  * computing the square root is faster. */
                 if (distanceSquared < critterSizeSquared) {
                     if (kind == ThingKind.food) {
-                        ++critter.foodCount;
+                        critter.eat();
 
                         /* simulate deleting the thing and adding a new one by
                          * changing its position */
                         this.setRandomPosition(thing);
                         continue;
                     } else if (kind == ThingKind.danger) {
-                        ++critter.dangerCount;
+                        critter.kill();
 
                         /* "dead" for this round  */
                         this.setRandomPosition(critter);

@@ -41,12 +41,22 @@ export enum ThingKind {
     danger,
 }
 
-export class Food {
+export interface Thing {
+    getKind(): ThingKind;
+    setPosition(x: number, y: number): void;
+    updatePosition(timeDelta: number): void;
+    getX(): number;
+    getY(): number;
+    createSvg(svg: SvgCanvas): void;
+    renderSvg(offsetX: number, offsetY: number): void;
+}
+
+export class Food implements Thing {
     private boing: Boing;
     private circle: SvgShape | undefined;
 
-    constructor(width: number, height: number) {
-        this.boing = new Boing(width, height, FOOD_SPEED);
+    constructor(sceneWidth: number, sceneHeight: number) {
+        this.boing = new Boing(sceneWidth, sceneHeight, FOOD_SPEED);
     }
 
     getKind(): ThingKind.food {
@@ -82,12 +92,12 @@ export class Food {
     }
 }
 
-export class Danger {
+export class Danger implements Thing {
     private boing: Boing;
     private rect: SvgShape | undefined;
 
-    constructor(width: number, height: number) {
-        this.boing = new Boing(width, height, DANGER_SPEED);
+    constructor(sceneWidth: number, sceneHeight: number) {
+        this.boing = new Boing(sceneWidth, sceneHeight, DANGER_SPEED);
     }
 
     getKind(): ThingKind.danger {
