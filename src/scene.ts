@@ -27,10 +27,17 @@
 
 import { BrainStimuli } from './brain';
 import {
+    BACKGROUND_COLOR,
+    BORDER_COLOR,
     CRITTER_SIZE,
     NUM_CRITTERS,
     NUM_DANGER,
     NUM_FOOD,
+    SCENE_BORDER,
+    SCENE_COLOR,
+    SCENE_HEIGHT,
+    SCENE_MARGIN,
+    SCENE_WIDTH,
     SCENT_DISTANCE_LIMIT,
     VISION_ANGLE_LIMIT,
     VISION_DISTANCE_LIMIT,
@@ -46,20 +53,16 @@ export class Scene {
     private readonly things: Thing[];
     private lastUpdate: DOMHighResTimeStamp;
 
-    constructor(
-        private readonly width: number,
-        private readonly height: number,
-        doAddCritters: boolean,
-    ) {
+    constructor(doAddCritters: boolean) {
         this.critters = [];
         this.things = [];
 
         for (let idx = 0; idx < NUM_FOOD; ++idx) {
-            this.addThing(new Food(width, height));
+            this.addThing(new Food(SCENE_WIDTH, SCENE_HEIGHT));
         }
 
         for (let idx = 0; idx < NUM_DANGER; ++idx) {
-            this.addThing(new Danger(width, height));
+            this.addThing(new Danger(SCENE_WIDTH, SCENE_HEIGHT));
         }
 
         /* For the displayed scene, critters are created when the scene is created.
@@ -68,7 +71,7 @@ export class Scene {
          * etc. */
         if (doAddCritters) {
             for (let idx = 0; idx < NUM_CRITTERS; ++idx) {
-                this.addCritter(new Critter(randomGenome(), width, height));
+                this.addCritter(new Critter(randomGenome(), SCENE_WIDTH, SCENE_HEIGHT));
             }
         }
 
@@ -85,6 +88,10 @@ export class Scene {
 
     harvestCritter(): Critter | null {
         return this.critters.shift() ?? null;
+    }
+
+    getCritter(index: number): Critter | undefined {
+        return this.critters[index];
     }
 
     updateScene(): void {
@@ -234,7 +241,7 @@ export class Scene {
             }
         } else if (critterAngle < -0.0) {
             /* bottom wall */
-            const distance = (critter.getY() - this.height) / Math.sin(critterAngle);
+            const distance = (critter.getY() - SCENE_HEIGHT) / Math.sin(critterAngle);
 
             if (distance < VISION_DISTANCE_LIMIT) {
                 const intensity =
@@ -249,7 +256,7 @@ export class Scene {
 
         if (critterAngle > -Math.PI / 2 && critterAngle < Math.PI / 2) {
             /* right wall */
-            const distance = (this.width - critter.getX()) / Math.cos(critterAngle);
+            const distance = (SCENE_WIDTH - critter.getX()) / Math.cos(critterAngle);
 
             if (distance < VISION_DISTANCE_LIMIT) {
                 const intensity =
@@ -289,10 +296,12 @@ export class Scene {
     }
 
     private setRandomPosition(thing: Thing | Critter): void {
-        thing.setPosition(this.width * Math.random(), this.height * Math.random());
+        thing.setPosition(SCENE_WIDTH * Math.random(), SCENE_HEIGHT * Math.random());
     }
 
     createSvg(svg: SvgCanvas): void {
+        this.createBackground(svg);
+
         for (const thing of this.things) {
             thing.createSvg(svg);
         }
@@ -301,12 +310,50 @@ export class Scene {
         }
     }
 
-    renderSvg(offsetX: number, offsetY: number): void {
+    private createBackground(svg: SvgCanvas): void {
+        /*  +----------------------------------------------------------------+
+         *  |////////////////////////////////////////////////////////////////|
+         *  |//+----------------------------------------------------------+//|
+         *  |//|//////////////////////////////////////////////////////////|//|
+         *  |//|//+----------------------------------------------------+//|//|
+         *  |//|//|                                                    |//|//|
+         *  |//|//|                      Scene                         |//|//|
+         *  |//|//|                                                    |//|//|
+         *  |//|//+----------------------------------------------------+//|//|
+         *  |//|///////////////////////////////////////Border/////////////|//|
+         *  |//+----------------------------------------------------------+//|
+         *  |//////////////////////////////////////////Background////////////|
+         *  +----------------------------------------------------------------+
+         *
+         * */
+        const backgroundWidth = SCENE_WIDTH + 2 * SCENE_MARGIN;
+        const backgroundHeight = SCENE_HEIGHT + 2 * SCENE_MARGIN;
+
+        svg.setViewbox(backgroundWidth, backgroundHeight);
+
+        const background = svg.addRectangle(0, 0, backgroundWidth, backgroundHeight);
+
+        background.setFillColor(BACKGROUND_COLOR);
+
+        const border = svg.addRectangle(
+            SCENE_BORDER,
+            SCENE_BORDER,
+            SCENE_WIDTH + 2 * SCENE_BORDER,
+            SCENE_HEIGHT + 2 * SCENE_BORDER,
+        );
+        border.setStrokeColor(BORDER_COLOR);
+
+        const scene = svg.addRectangle(SCENE_MARGIN, SCENE_MARGIN, SCENE_WIDTH, SCENE_HEIGHT);
+
+        scene.setFillColor(SCENE_COLOR);
+    }
+
+    renderSvg(): void {
         for (const thing of this.things) {
-            thing.renderSvg(offsetX, offsetY);
+            thing.renderSvg(SCENE_MARGIN, SCENE_MARGIN);
         }
         for (const critter of this.critters) {
-            critter.renderSvg(offsetX, offsetY);
+            critter.renderSvg(SCENE_MARGIN, SCENE_MARGIN);
         }
     }
 }

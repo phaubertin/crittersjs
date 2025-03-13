@@ -25,132 +25,98 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import {
-    BACKGROUND_COLOR,
-    BORDER_COLOR,
-    SCENE_BORDER,
-    SCENE_COLOR,
-    SCENE_HEIGHT,
-    SCENE_MARGIN,
-    SCENE_WIDTH,
-} from './config';
+import { WORKER_FILE_NAME } from './config';
 import { Genome } from './genome';
 import { Logger, MainLogger } from './logging';
 import { deserializeMessage, MessageType } from './message';
 import { Scene } from './scene';
 import { SvgCanvas } from './svg';
 
-const BACKGROUND_WIDTH = SCENE_WIDTH + 2 * SCENE_MARGIN;
+export class CrittersApplication {
+    constructor(
+        private readonly scene: Scene,
+        private readonly svg: SvgCanvas,
+        private readonly mainLogger: Logger,
+        private readonly workerLogger: Logger,
+    ) {}
 
-const BACKGROUND_HEIGHT = SCENE_HEIGHT + 2 * SCENE_MARGIN;
+    start(): void {
+        this.scene.createSvg(this.svg);
+        this.startPeriodic();
+        this.startWorker();
+    }
 
-/*  +--------------------------------------------------------------------------+
- *  |//////////////////////////////////////////////////////////////////////////|
- *  |//+--------------------------------------------------------------------+//|
- *  |//|////////////////////////////////////////////////////////////////////|//|
- *  |//|//+--------------------------------------------------------------+//|//|
- *  |//|//|                                                              |//|//|
- *  |//|//|                           Scene                              |//|//|
- *  |//|//|                                                              |//|//|
- *  |//|//+--------------------------------------------------------------+//|//|
- *  |//|/////////////////////////////////////////////////Border/////////////|//|
- *  |//+--------------------------------------------------------------------+//|
- *  |////////////////////////////////////////////////////Background////////////|
- *  +--------------------------------------------------------------------------+
- *
- * */
+    private startWorker(): void {
+        this.mainLogger.log('Starting worker.');
 
-function createBackground(svg: SvgCanvas) {
-    const background = svg.addRectangle(0, 0, BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
-    background.setFillColor(BACKGROUND_COLOR);
+        const worker = new Worker(WORKER_FILE_NAME);
 
-    const border = svg.addRectangle(
-        SCENE_BORDER,
-        SCENE_BORDER,
-        SCENE_WIDTH + 2 * SCENE_BORDER,
-        SCENE_HEIGHT + 2 * SCENE_BORDER,
-    );
-    border.setStrokeColor(BORDER_COLOR);
+        worker.onmessage = this.handleWorkerMessageEvent.bind(this);
+    }
 
-    const scene = svg.addRectangle(SCENE_MARGIN, SCENE_MARGIN, SCENE_WIDTH, SCENE_HEIGHT);
-    scene.setFillColor(SCENE_COLOR);
-}
+    private startPeriodic(): void {
+        window.setInterval(this.handlePeriodic.bind(this), 20);
+    }
 
-function updateSceneCritters(scene, genomes: Genome[], logger: Logger) {
-    let idx = 0;
+    private handlePeriodic(): void {
+        this.scene.updateScene();
+        this.scene.renderSvg();
+    }
 
-    logger.log('Updating scene.');
+    private handleWorkerMessageEvent(e: MessageEvent<string>): void {
+        const message = deserializeMessage(e.data);
 
-    for (let genome of genomes) {
-        if (idx < scene.critters.length) {
-            scene.critters[idx].genome = genome;
-        } else {
-            break;
+        switch (message.type) {
+            case MessageType.updateGenome:
+                this.updateSceneCritters(message.genomes);
+                break;
+            case MessageType.logStatus:
+                this.workerLogger.log(message.status);
+                break;
         }
-        ++idx;
     }
-}
 
-function handleWorkerMessage(
-    scene,
-    mainLogger: Logger,
-    workerLogger: Logger,
-    e: MessageEvent<string>,
-) {
-    const message = deserializeMessage(e.data);
+    private updateSceneCritters(genomes: Genome[]): void {
+        this.mainLogger.log('Updating scene.');
 
-    console.log(message);
+        let index = 0;
 
-    switch (message.type) {
-        case MessageType.updateGenome:
-            updateSceneCritters(scene, message.genomes, mainLogger);
-            break;
-        case MessageType.logStatus:
-            workerLogger.log(message.status);
-            break;
+        for (let genome of genomes) {
+            const critter = this.scene.getCritter(index);
+
+            if (!critter) {
+                break;
+            }
+
+            critter.setGenome(genome);
+
+            ++index;
+        }
     }
-}
-
-function createWorker(scene, mainLogger: Logger, workerLogger: Logger) {
-    mainLogger.log('Starting worker.');
-
-    var worker = new Worker('critters-worker.js');
-
-    worker.onmessage = function (e) {
-        handleWorkerMessage(scene, mainLogger, workerLogger, e);
-    };
 }
 
 export function loadCritters(renderID, logID) {
-    let renderParent = document.getElementById(renderID);
-
-    if (!renderParent) {
-        console.error(`No '${renderID}' element (rendering parent)`);
-        return;
-    }
-
+    const renderParent = document.getElementById(renderID);
     const logParent = document.getElementById(logID);
 
-    if (!logParent) {
-        console.error(`No '${logID}' element (logging parent)`);
+    if (!(renderParent && logParent)) {
+        if (!renderParent) {
+            console.error(`No '${renderID}' element (rendering parent)`);
+        }
+
+        if (!logParent) {
+            console.error(`No '${logID}' element (logging parent)`);
+        }
+
         return;
     }
 
-    const svg = SvgCanvas.create(renderParent);
-    svg.setViewbox(BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
+    const application = new CrittersApplication(
+        new Scene(true),
+        SvgCanvas.create(renderParent),
+        new MainLogger(logParent, 'main'),
+        new MainLogger(logParent, 'worker'),
+    );
 
-    createBackground(svg);
-    const scene = new Scene(SCENE_WIDTH, SCENE_HEIGHT, true);
-
-    scene.createSvg(svg);
-
-    window.setInterval(function () {
-        scene.updateScene();
-        scene.renderSvg(SCENE_MARGIN, SCENE_MARGIN);
-    }, 20);
-
-    const mainLogger = new MainLogger(logParent, 'main');
-    const workerLogger = new MainLogger(logParent, 'worker');
-
-    createWorker(scene, mainLogger, workerLogger);
+    application.start();
 }

@@ -48,7 +48,7 @@ export class Critter {
     private body: SvgShape | undefined;
 
     constructor(
-        private readonly genome: Genome,
+        private genome: Genome,
         private readonly sceneWidth: number,
         private readonly sceneHeight: number,
     ) {
@@ -142,6 +142,10 @@ export class Critter {
 
     getGenome(): Genome {
         return this.genome;
+    }
+
+    setGenome(genome: Genome): void {
+        this.genome = genome;
     }
 
     createSvg(svg: SvgCanvas): void {

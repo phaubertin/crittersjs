@@ -178,7 +178,7 @@ function randomPopulation(size) {
 }
 
 function runSimulation(population) {
-    let scene = new Scene(SCENE_WIDTH, SCENE_HEIGHT, false);
+    let scene = new Scene(false);
     let result = [] as any[];
 
     /* Until all genomes in the population have been processed ... */

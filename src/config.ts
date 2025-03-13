@@ -115,3 +115,5 @@ export const FIRST_UPDATE = 2.0; /* In seconds */
 export const UPDATE_INTERVAL = 20.0; /* In seconds */
 
 export const LOG_INTERVAL = 50; /* In generations */
+
+export const WORKER_FILE_NAME = 'critters-worker.js';
