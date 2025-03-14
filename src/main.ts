@@ -27,7 +27,7 @@
 
 import { WORKER_FILE_NAME } from './config';
 import { Genome } from './genome';
-import { Logger, MainLogger } from './logging';
+import { Logger, HtmlElementAndConsoleLogger } from './logging';
 import { deserializeMessage, MessageType } from './message';
 import { Scene } from './scene';
 import { SvgCanvas } from './svg';
@@ -114,8 +114,8 @@ export function loadCritters(renderID, logID) {
     const application = new CrittersApplication(
         new Scene(true),
         SvgCanvas.create(renderParent),
-        new MainLogger(logParent, 'main'),
-        new MainLogger(logParent, 'worker'),
+        new HtmlElementAndConsoleLogger(logParent, 'main'),
+        new HtmlElementAndConsoleLogger(logParent, 'worker'),
     );
 
     application.start();

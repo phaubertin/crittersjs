@@ -40,7 +40,7 @@ export class MessageLogger implements Logger {
     }
 }
 
-export class MainLogger implements Logger {
+export class HtmlElementAndConsoleLogger implements Logger {
     constructor(
         private readonly parent: HTMLElement,
         private readonly origin: string,
