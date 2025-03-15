@@ -43,8 +43,9 @@ export enum ThingKind {
 
 export interface Thing {
     getKind(): ThingKind;
-    setPosition(x: number, y: number): void;
     updatePosition(timeDelta: number): void;
+    setPosition(x: number, y: number): void;
+    setRandomPosition(): void;
     getX(): number;
     getY(): number;
     createSvg(svg: SvgCanvas): void;
@@ -63,12 +64,16 @@ export class Food implements Thing {
         return ThingKind.food;
     }
 
+    updatePosition(timeDelta: number): void {
+        this.boing.updatePosition(timeDelta);
+    }
+
     setPosition(x: number, y: number): void {
         this.boing.setPosition(x, y);
     }
 
-    updatePosition(timeDelta: number): void {
-        this.boing.updatePosition(timeDelta);
+    setRandomPosition(): void {
+        this.boing.setRandomPosition();
     }
 
     getX(): number {
@@ -104,12 +109,16 @@ export class Danger implements Thing {
         return ThingKind.danger;
     }
 
+    updatePosition(timeDelta: number): void {
+        this.boing.updatePosition(timeDelta);
+    }
+
     setPosition(x: number, y: number): void {
         this.boing.setPosition(x, y);
     }
 
-    updatePosition(timeDelta: number): void {
-        this.boing.updatePosition(timeDelta);
+    setRandomPosition(): void {
+        this.boing.setRandomPosition();
     }
 
     getX(): number {

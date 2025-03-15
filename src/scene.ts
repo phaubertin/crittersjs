@@ -162,16 +162,14 @@ export class Scene {
             if (distanceSquared < critterSizeSquared) {
                 if (kind == ThingKind.food) {
                     critter.eat();
-
                     /* simulate deleting the thing and adding a new one by
                      * changing its position */
-                    this.setRandomPosition(thing);
+                    thing.setRandomPosition();
                     continue;
                 } else if (kind == ThingKind.danger) {
                     critter.kill();
-
                     /* "dead" for this round  */
-                    this.setRandomPosition(critter);
+                    critter.setRandomPosition();
                     return null;
                 }
             }
@@ -293,10 +291,6 @@ export class Scene {
             wallAngle,
             wallIntensity,
         };
-    }
-
-    private setRandomPosition(thing: Thing | Critter): void {
-        thing.setPosition(SCENE_WIDTH * Math.random(), SCENE_HEIGHT * Math.random());
     }
 
     createSvg(svg: SvgCanvas): void {

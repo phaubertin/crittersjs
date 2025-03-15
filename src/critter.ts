@@ -128,6 +128,10 @@ export class Critter {
         this.y = y;
     }
 
+    setRandomPosition(): void {
+        this.setPosition(this.sceneWidth * Math.random(), this.sceneHeight * Math.random());
+    }
+
     getX(): number {
         return this.x;
     }
