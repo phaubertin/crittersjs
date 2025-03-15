@@ -63,6 +63,16 @@ export function randomGenome(): Genome {
     };
 }
 
+export function randomPopulation(size: number): Genome[] {
+    let population: Genome[] = [];
+
+    for (let idx = 0; idx < size; ++idx) {
+        population.push(randomGenome());
+    }
+
+    return population;
+}
+
 export function makeBaby(mommy: Genome, daddy: Genome): Genome {
     let hiddenWeights = new Array(mommy.hiddenWeights.length);
     let outputWeights = new Array(mommy.outputWeights.length);

@@ -43,10 +43,15 @@ import {
 } from './config';
 import { MILLISECONDS_PER_SECOND } from './constants';
 import { Critter } from './critter';
-import { Genome, makeBaby, randomGenome } from './genome';
+import { Genome, makeBaby, randomGenome, randomPopulation } from './genome';
 import { Logger, MessageLogger } from './logging';
 import { MessageType, publishMessage } from './message';
 import { Scene } from './scene';
+
+interface SimulationResult {
+    fitness: number;
+    genome: Genome;
+}
 
 const SIM_STEPS = (SIM_TIME * 1000) / TIME_STEP;
 
@@ -54,7 +59,7 @@ const logger: Logger = new MessageLogger();
 
 startWorker();
 
-function startWorker() {
+function startWorker(): void {
     logger.log('Worker is alive!');
 
     let population = randomPopulation(POPULATION_SIZE);
@@ -65,7 +70,7 @@ function startWorker() {
         let timeStart = performance.now();
         let simResult = runSimulation(population);
 
-        sortResult(simResult);
+        sortSimulationResults(simResult);
 
         let fitnessScore = averageFitnessNFirst(simResult, BEST_KEEP);
         let pool = selectPool(simResult);
@@ -87,7 +92,7 @@ function startWorker() {
     }
 }
 
-function averageFitnessNFirst(simResult, n) {
+function averageFitnessNFirst(simResult: SimulationResult[], n: number): number {
     let sum = 0.0;
 
     for (let idx = 0; idx < n; ++idx) {
@@ -97,11 +102,11 @@ function averageFitnessNFirst(simResult, n) {
     return sum / n;
 }
 
-function doUpdate(simResult, fitnessScore) {
+function doUpdate(simResults: SimulationResult[], fitnessScore: number): void {
     let genomes: Genome[] = [];
 
     for (let idx = 0; idx < NUM_CRITTERS; ++idx) {
-        genomes.push(simResult[idx].genome);
+        genomes.push(simResults[idx].genome);
     }
 
     logger.log('Sending update. Fitness: ' + fitnessScore.toFixed(3));
@@ -112,39 +117,39 @@ function doUpdate(simResult, fitnessScore) {
     });
 }
 
-function logGeneration(generation, fitnessScore, duration) {
+function logGeneration(generation: number, fitnessScore: number, durationInMs: number): void {
     logger.log(
         'Generation: ' +
             generation.toString() +
             ' Duration (ms): ' +
-            Math.floor(duration).toString() +
+            Math.floor(durationInMs).toString() +
             ' Fitness: ' +
             fitnessScore.toFixed(3),
     );
 }
 
-function sortResult(simResult) {
+function sortSimulationResults(simResult: SimulationResult[]): void {
     simResult.sort(function (a, b) {
         return b.fitness - a.fitness;
     });
 }
 
-function selectPool(simResult) {
-    let pool = [] as any[];
+function selectPool(simResults: SimulationResult[]): Genome[] {
+    let pool: Genome[] = [];
 
     for (let n = 0; n < WORST_DISCARD; ++n) {
-        simResult.pop();
+        simResults.pop();
     }
 
     for (let idx = 0; idx < BEST_KEEP; ++idx) {
         for (let n = 0; n < BEST_PRIORITY; ++n) {
-            pool.push(simResult[idx].genome);
+            pool.push(simResults[idx].genome);
         }
     }
 
     for (let n = 0; n < RAND_KEEP; ++n) {
-        let keepIndex = Math.floor(Math.random() * simResult.length);
-        pool.push(simResult[keepIndex].genome);
+        const keepIndex = Math.floor(Math.random() * simResults.length);
+        pool.push(simResults[keepIndex].genome);
     }
 
     for (let n = 0; n < RAND_NEW; ++n) {
@@ -154,12 +159,12 @@ function selectPool(simResult) {
     return pool;
 }
 
-function generateNextPopulation(pool, size) {
-    let population = [] as any[];
+function generateNextPopulation(pool: Genome[], size: number): Genome[] {
+    let population: Genome[] = [];
 
     for (let n = 0; n < size; ++n) {
-        let mommyIndex = Math.floor(Math.random() * pool.length);
-        let daddyIndex = Math.floor(Math.random() * pool.length);
+        const mommyIndex = Math.floor(Math.random() * pool.length);
+        const daddyIndex = Math.floor(Math.random() * pool.length);
 
         population.push(makeBaby(pool[mommyIndex], pool[daddyIndex]));
     }
@@ -167,26 +172,16 @@ function generateNextPopulation(pool, size) {
     return population;
 }
 
-function randomPopulation(size) {
-    let population = [] as any[];
-
-    for (let idx = 0; idx < size; ++idx) {
-        population.push(randomGenome());
-    }
-
-    return population;
-}
-
-function runSimulation(population) {
+function runSimulation(population: Genome[]): SimulationResult[] {
     let scene = new Scene(false);
-    let result = [] as any[];
+    let result: SimulationResult[] = [];
 
-    /* Until all genomes in the population have been processed ... */
-    for (let popIndex = 0; popIndex < population.length /* nothing */; ) {
-        /* ... add at most NUM_CRITTERS genomes from the remaining ones to the scene. */
-        for (let idx = 0; idx < NUM_CRITTERS && popIndex < population.length; ++idx, ++popIndex) {
-            scene.addCritter(new Critter(population[popIndex], SCENE_WIDTH, SCENE_HEIGHT));
-        }
+    for (let idx = 0; idx < population.length; idx += NUM_CRITTERS) {
+        const subPopulation = population.slice(idx, idx + NUM_CRITTERS);
+
+        subPopulation.forEach((genome) =>
+            scene.addCritter(new Critter(genome, SCENE_WIDTH, SCENE_HEIGHT)),
+        );
 
         /* simulate scene */
         for (let step = 0; step < SIM_STEPS; ++step) {
@@ -194,15 +189,17 @@ function runSimulation(population) {
         }
 
         /* harvest time */
-        let critter = scene.harvestCritter();
+        while (true) {
+            const critter = scene.harvestCritter();
 
-        while (critter != null) {
+            if (!critter) {
+                break;
+            }
+
             result.push({
                 fitness: critter.computeFitness(),
                 genome: critter.getGenome(),
             });
-
-            critter = scene.harvestCritter();
         }
     }
 
