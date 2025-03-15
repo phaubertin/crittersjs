@@ -1,16 +1,21 @@
+import prettierPlugin from 'eslint-plugin-prettier';
+import prettierRecommended from 'eslint-plugin-prettier/recommended';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
-import prettierPlugin from 'eslint-plugin-prettier';
-import prettierConfig from 'eslint-config-prettier';
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
+    {
+        ignores: ['dist/**/*'],
+    },
     {
         files: ['src/*.ts'],
 
         languageOptions: {
             parser: tsparser,
-            sourceType: 'module',
+            parserOptions: {
+                project: './tsconfig.json',
+            },
         },
 
         plugins: {
@@ -20,11 +25,7 @@ export default [
 
         rules: {
             ...tseslint.configs.recommended.rules,
-            ...prettierConfig.rules,
-            '@typescript-eslint/no-unused-vars': 'warn',
-            // Until we are done annotating types
-            '@typescript-eslint/no-explicit-any': 'off',
-            'prettier/prettier': 'error',
         },
     },
+    prettierRecommended,
 ];

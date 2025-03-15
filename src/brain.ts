@@ -101,7 +101,7 @@ export class Brain {
         }
     }
 
-    private static computeSigmoishActivation(x): number {
+    private static computeSigmoishActivation(x: number): number {
         /* Piecewise polynomial approximation of a sigmoid-like curve
          *
          * The value of the function is zero for arguments under -5 and one for

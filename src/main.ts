@@ -95,7 +95,7 @@ export class CrittersApplication {
     }
 }
 
-export function loadCritters(renderID, logID) {
+export function loadCritters(renderID: string, logID: string): void {
     const renderParent = document.getElementById(renderID);
     const logParent = document.getElementById(logID);
 
