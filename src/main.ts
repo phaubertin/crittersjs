@@ -68,7 +68,9 @@ export class CrittersApplication {
 
         switch (message.type) {
             case MessageType.updateGenome:
-                this.updateSceneCritters(message.genomes);
+                this.updateSceneCritters(
+                    message.genomes.map((genome) => Genome.deSerialize(genome)),
+                );
                 break;
             case MessageType.logStatus:
                 this.workerLogger.log(message.status);

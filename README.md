@@ -2,7 +2,7 @@
 
 Critters must catch food (green circles) and avoid dangers (red squares). The 
 brain of each critter is a small feedforward neural network. Brains are trained 
-using a genetic algorithm to simulate evolution. Every 20 seconds, the five 
+using a genetic algorithm to simulate evolution. Every 10 seconds, the five 
 best critters of the latest generation are sent to the simulation rendered on 
 the web page.
 

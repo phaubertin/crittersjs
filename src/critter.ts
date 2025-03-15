@@ -170,6 +170,6 @@ export class Critter {
         this.head.setTranslate(this.x + offsetX, this.y + offsetY);
         this.body.setRotate(degAngle);
         this.head.setRotate(degAngle);
-        this.head.setFillColor(this.genome.color);
+        this.head.setFillColor(this.genome.getColor());
     }
 }

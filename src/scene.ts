@@ -44,7 +44,7 @@ import {
 } from './config';
 import { MILLISECONDS_PER_SECOND } from './constants';
 import { Critter } from './critter';
-import { randomGenome } from './genome';
+import { Genome } from './genome';
 import { SvgCanvas } from './svg';
 import { Danger, Food, Thing, ThingKind } from './thing';
 
@@ -71,7 +71,7 @@ export class Scene {
          * etc. */
         if (doAddCritters) {
             for (let idx = 0; idx < NUM_CRITTERS; ++idx) {
-                this.addCritter(new Critter(randomGenome(), SCENE_WIDTH, SCENE_HEIGHT));
+                this.addCritter(new Critter(Genome.random(), SCENE_WIDTH, SCENE_HEIGHT));
             }
         }
 

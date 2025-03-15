@@ -49,6 +49,9 @@ export interface BrainControlOutput {
 
 export class Brain {
     static computeControl(genome: Genome, stimuli: BrainStimuli): BrainControlOutput {
+        const hiddenWeights = genome.getHiddenWeights();
+        const outputWeights = genome.getOutputWeights();
+
         const hidden = new Array<number>(genome.hiddenWeights.length);
         const output = new Array<number>(2);
         const input = [
@@ -66,10 +69,10 @@ export class Brain {
 
         for (let idx = 0; idx < hidden.length; ++idx) {
             /* First weight is bias. */
-            let acc = genome.hiddenWeights[idx][0];
+            let acc = hiddenWeights[idx][0];
 
-            for (let idy = 0; idy < genome.hiddenWeights[idx].length - 1; ++idy) {
-                acc += input[idy] * genome.hiddenWeights[idx][idy + 1];
+            for (let idy = 0; idy < hiddenWeights[idx].length - 1; ++idy) {
+                acc += input[idy] * hiddenWeights[idx][idy + 1];
             }
 
             hidden[idx] = this.computeReluActivation(acc);
@@ -78,10 +81,10 @@ export class Brain {
         /* Compute output layer. */
 
         for (let idx = 0; idx < output.length; ++idx) {
-            let acc = genome.outputWeights[idx][0];
+            let acc = outputWeights[idx][0];
 
-            for (var idy = 0; idy < genome.outputWeights[idx].length - 1; ++idy) {
-                acc += hidden[idy] * genome.outputWeights[idx][idy + 1];
+            for (var idy = 0; idy < outputWeights[idx].length - 1; ++idy) {
+                acc += hidden[idy] * outputWeights[idx][idy + 1];
             }
 
             output[idx] = this.computeSigmoishActivation(acc);

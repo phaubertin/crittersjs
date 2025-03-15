@@ -43,7 +43,7 @@ import {
 } from './config';
 import { MILLISECONDS_PER_SECOND } from './constants';
 import { Critter } from './critter';
-import { Genome, makeBaby, randomGenome, randomPopulation } from './genome';
+import { Genome } from './genome';
 import { Logger, MessageLogger } from './logging';
 import { MessageType, publishMessage } from './message';
 import { Scene } from './scene';
@@ -62,7 +62,7 @@ startWorker();
 function startWorker(): void {
     logger.log('Worker is alive!');
 
-    let population = randomPopulation(POPULATION_SIZE);
+    let population = Genome.randomPopulation(POPULATION_SIZE);
     let updateDue = performance.now() + FIRST_UPDATE * MILLISECONDS_PER_SECOND;
     let generation = 1;
 
@@ -113,7 +113,7 @@ function doUpdate(simResults: SimulationResult[], fitnessScore: number): void {
 
     publishMessage({
         type: MessageType.updateGenome,
-        genomes,
+        genomes: genomes.map((genome) => genome.serialize()),
     });
 }
 
@@ -153,7 +153,7 @@ function selectPool(simResults: SimulationResult[]): Genome[] {
     }
 
     for (let n = 0; n < RAND_NEW; ++n) {
-        pool.push(randomGenome());
+        pool.push(Genome.random());
     }
 
     return pool;
@@ -166,7 +166,7 @@ function generateNextPopulation(pool: Genome[], size: number): Genome[] {
         const mommyIndex = Math.floor(Math.random() * pool.length);
         const daddyIndex = Math.floor(Math.random() * pool.length);
 
-        population.push(makeBaby(pool[mommyIndex], pool[daddyIndex]));
+        population.push(pool[mommyIndex].reproduce(pool[daddyIndex]));
     }
 
     return population;

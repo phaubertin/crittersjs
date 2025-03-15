@@ -25,7 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Genome } from './genome';
+import { GenomeParams } from './genome';
 
 export enum MessageType {
     logStatus = 'log-status',
@@ -43,7 +43,7 @@ export interface LogStatusMessage extends BaseMessage {
 
 export interface UpdateGenomeMessage extends BaseMessage {
     type: MessageType.updateGenome;
-    genomes: Genome[];
+    genomes: GenomeParams[];
 }
 
 export type Message = LogStatusMessage | UpdateGenomeMessage;
