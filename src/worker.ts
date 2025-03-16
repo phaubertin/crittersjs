@@ -25,183 +25,103 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import {
-    BEST_KEEP,
-    BEST_PRIORITY,
-    FIRST_UPDATE,
-    LOG_INTERVAL,
-    NUM_CRITTERS,
-    POPULATION_SIZE,
-    RAND_KEEP,
-    RAND_NEW,
-    SCENE_HEIGHT,
-    SCENE_WIDTH,
-    SIM_TIME,
-    TIME_STEP,
-    UPDATE_INTERVAL,
-    WORST_DISCARD,
-} from './config';
+import { BEST_KEEP, FIRST_UPDATE, LOG_INTERVAL, NUM_CRITTERS, UPDATE_INTERVAL } from './config';
 import { MILLISECONDS_PER_SECOND } from './constants';
-import { Critter } from './critter';
+import { GeneticAlgorithmOrchestrator } from './genetic';
 import { Genome } from './genome';
 import { Logger, MessageLogger } from './logging';
 import { MessageType, publishMessage } from './message';
 import { Scene } from './scene';
+import { SimulatorResult, Simulator } from './simulator';
 
-interface SimulationResult {
-    fitness: number;
-    genome: Genome;
-}
+export class CrittersWorker {
+    constructor(
+        private readonly geneticAlgorithmOrchestrator: GeneticAlgorithmOrchestrator,
+        private readonly logger: Logger,
+    ) {}
 
-const SIM_STEPS = (SIM_TIME * 1000) / TIME_STEP;
-
-const logger: Logger = new MessageLogger();
-
-startWorker();
-
-function startWorker(): void {
-    logger.log('Worker is alive!');
-
-    let population = Genome.randomPopulation(POPULATION_SIZE);
-    let updateDue = performance.now() + FIRST_UPDATE * MILLISECONDS_PER_SECOND;
-    let generation = 1;
-
-    while (true) {
-        let timeStart = performance.now();
-        let simResult = runSimulation(population);
-
-        sortSimulationResults(simResult);
-
-        let fitnessScore = averageFitnessNFirst(simResult, BEST_KEEP);
-        let pool = selectPool(simResult);
-
-        population = generateNextPopulation(pool, POPULATION_SIZE);
-
-        let timeEnd = performance.now();
-
-        if (timeEnd > updateDue) {
-            doUpdate(simResult, fitnessScore);
-            updateDue = timeEnd + UPDATE_INTERVAL * MILLISECONDS_PER_SECOND;
-        }
-
-        if (generation % LOG_INTERVAL == 0) {
-            logGeneration(generation, fitnessScore, timeEnd - timeStart);
-        }
-
-        ++generation;
-    }
-}
-
-function averageFitnessNFirst(simResult: SimulationResult[], n: number): number {
-    let sum = 0.0;
-
-    for (let idx = 0; idx < n; ++idx) {
-        sum += simResult[idx].fitness;
+    start(): void {
+        this.logger.log('Worker is alive!');
+        this.geneticAlgorithmOrchestrator.start();
+        this.loop();
     }
 
-    return sum / n;
-}
+    private loop(): void {
+        let updateDue = performance.now() + FIRST_UPDATE * MILLISECONDS_PER_SECOND;
 
-function doUpdate(simResults: SimulationResult[], fitnessScore: number): void {
-    let genomes: Genome[] = [];
-
-    for (let idx = 0; idx < NUM_CRITTERS; ++idx) {
-        genomes.push(simResults[idx].genome);
-    }
-
-    logger.log('Sending update. Fitness: ' + fitnessScore.toFixed(3));
-
-    publishMessage({
-        type: MessageType.updateGenome,
-        genomes: genomes.map((genome) => genome.serialize()),
-    });
-}
-
-function logGeneration(generation: number, fitnessScore: number, durationInMs: number): void {
-    logger.log(
-        'Generation: ' +
-            generation.toString() +
-            ' Duration (ms): ' +
-            Math.floor(durationInMs).toString() +
-            ' Fitness: ' +
-            fitnessScore.toFixed(3),
-    );
-}
-
-function sortSimulationResults(simResult: SimulationResult[]): void {
-    simResult.sort(function (a, b) {
-        return b.fitness - a.fitness;
-    });
-}
-
-function selectPool(simResults: SimulationResult[]): Genome[] {
-    let pool: Genome[] = [];
-
-    for (let n = 0; n < WORST_DISCARD; ++n) {
-        simResults.pop();
-    }
-
-    for (let idx = 0; idx < BEST_KEEP; ++idx) {
-        for (let n = 0; n < BEST_PRIORITY; ++n) {
-            pool.push(simResults[idx].genome);
-        }
-    }
-
-    for (let n = 0; n < RAND_KEEP; ++n) {
-        const keepIndex = Math.floor(Math.random() * simResults.length);
-        pool.push(simResults[keepIndex].genome);
-    }
-
-    for (let n = 0; n < RAND_NEW; ++n) {
-        pool.push(Genome.random());
-    }
-
-    return pool;
-}
-
-function generateNextPopulation(pool: Genome[], size: number): Genome[] {
-    let population: Genome[] = [];
-
-    for (let n = 0; n < size; ++n) {
-        const mommyIndex = Math.floor(Math.random() * pool.length);
-        const daddyIndex = Math.floor(Math.random() * pool.length);
-
-        population.push(pool[mommyIndex].reproduce(pool[daddyIndex]));
-    }
-
-    return population;
-}
-
-function runSimulation(population: Genome[]): SimulationResult[] {
-    let scene = new Scene(false);
-    let result: SimulationResult[] = [];
-
-    for (let idx = 0; idx < population.length; idx += NUM_CRITTERS) {
-        const subPopulation = population.slice(idx, idx + NUM_CRITTERS);
-
-        subPopulation.forEach((genome) =>
-            scene.addCritter(new Critter(genome, SCENE_WIDTH, SCENE_HEIGHT)),
-        );
-
-        /* simulate scene */
-        for (let step = 0; step < SIM_STEPS; ++step) {
-            scene.updatePosition(TIME_STEP / MILLISECONDS_PER_SECOND);
-        }
-
-        /* harvest time */
         while (true) {
-            const critter = scene.harvestCritter();
+            const timeStart = performance.now();
 
-            if (!critter) {
-                break;
+            const simResults = this.geneticAlgorithmOrchestrator.run();
+
+            const timeEnd = performance.now();
+
+            if (timeEnd > updateDue) {
+                this.updateMain(simResults);
+                updateDue = timeEnd + UPDATE_INTERVAL * MILLISECONDS_PER_SECOND;
             }
 
-            result.push({
-                fitness: critter.computeFitness(),
-                genome: critter.getGenome(),
-            });
+            const generation = this.geneticAlgorithmOrchestrator.getGeneration();
+
+            if (generation % LOG_INTERVAL == 0) {
+                this.logGeneration(simResults, generation, timeEnd - timeStart);
+            }
         }
     }
 
-    return result;
+    private updateMain(simResults: SimulatorResult[]): void {
+        const genomes: Genome[] = [];
+
+        for (let idx = 0; idx < NUM_CRITTERS; ++idx) {
+            genomes.push(simResults[idx].genome);
+        }
+
+        this.logger.log(
+            `Sending update. Fitness: ${this.formatFitnessScore(this.computeFitnessScore(simResults))}`,
+        );
+
+        publishMessage({
+            type: MessageType.updateGenome,
+            genomes: genomes.map((genome) => genome.serialize()),
+        });
+    }
+
+    private logGeneration(
+        simResults: readonly SimulatorResult[],
+        generation: number,
+        durationInMs: number,
+    ): void {
+        this.logger.log(
+            'Generation: ' +
+                generation.toString() +
+                ' Duration (ms): ' +
+                Math.floor(durationInMs).toString() +
+                ' Fitness: ' +
+                this.formatFitnessScore(this.computeFitnessScore(simResults)),
+        );
+    }
+
+    private computeFitnessScore(simResult: readonly SimulatorResult[]): number {
+        let sum = 0.0;
+
+        for (let idx = 0; idx < BEST_KEEP; ++idx) {
+            sum += simResult[idx].fitness;
+        }
+
+        return sum / BEST_KEEP;
+    }
+
+    private formatFitnessScore(fitnessScore: number): string {
+        return fitnessScore.toFixed(3);
+    }
 }
+
+export function startWorker(): void {
+    const worker = new CrittersWorker(
+        new GeneticAlgorithmOrchestrator(new Simulator(new Scene(false))),
+        new MessageLogger(),
+    );
+    worker.start();
+}
+
+startWorker();
