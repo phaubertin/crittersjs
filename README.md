@@ -18,7 +18,9 @@ This project uses `npm` to install dependencies and perform the build.
 Runtime Requirements
 --------------------
 
-The only runtime requirement is a web browser.
+A web browser is required.
+
+Node.js is also required to start the server for local testing.
 
 Build Instructions
 ------------------
@@ -45,22 +47,27 @@ Output files are placed in the `dist/` directory:
 Run Instructions
 ------------------
 
-If you are using a web browser other than Google Chrome, running the application
-is probably as simple as opening the **target/index.html** file in your browser.
+Once built, the `dist/` directory contains the complete demo as a single web
+page (`index.html`) that load the necessary scripts. One complication to keep
+in mind for local testing, however, is that some web browsers do not allow
+running workers from scripts loaded from local files. See
+[this Stack Overflow question](https://stackoverflow.com/questions/21408510/chrome-cant-load-web-worker)
+for some more context.
 
-The issue with running this application in Chrome is that it does not allow
-running a web worker from a local file. A possible workaround is to start
-Chrome with the ``--allow-file-access-from-files`` argument. The ``run-with-chrome``
-bash script at the top of the repository does this for you. For this workaround
-to work, all Chrome windows have to be closed beforehand.
+The easier option for local testing is to run the following:
 
-Alternatively, the application can be served with any HTTP server so the
-web worker's code is no longer a local file. For example, if you have Python 3
-installed, simply change into the **target** directory and start the built in
-HTTP server, then point your web browser to ``localhost:8000``.
 ```
-cd target
-python -m http.server
+npm run start
 ```
 
-More detail and other possible workarounds can be found in [this Stack Overflow question](https://stackoverflow.com/questions/21408510/chrome-cant-load-web-worker).
+This starts a web server locally on port `8080` that serves the files from the
+`dist/` directory, and then opens your default web browser at the right address.
+This requires a local installation of Node.js for the server.
+
+If you prefer just starting the server, run the following instead:
+
+```
+npm run server
+```
+
+Then, navigate with your web browser of choice to [http://127.0.0.1:8080](http://127.0.0.1:8080).
