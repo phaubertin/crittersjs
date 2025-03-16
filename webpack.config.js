@@ -5,7 +5,7 @@ module.exports = {
     entry: {
         main: {
             import: './src/main.ts',
-            filename: 'critters-main.js',
+            filename: 'critters.js',
         },
         worker: {
             import: './src/worker.ts',
