@@ -48,13 +48,13 @@ Run Instructions
 ------------------
 
 Once built, the `dist/` directory contains the complete demo as a single web
-page (`index.html`) that load the necessary scripts. One complication to keep
+page (`index.html`) that loads the necessary script. One complication to keep
 in mind for local testing, however, is that some web browsers do not allow
-running workers from scripts loaded from local files. See
+running a worker from a script loaded from a local file. See
 [this Stack Overflow question](https://stackoverflow.com/questions/21408510/chrome-cant-load-web-worker)
 for some more context.
 
-The easier option for local testing is to run the following:
+The easiest option for local testing is to run the following:
 
 ```
 npm run start
@@ -64,7 +64,8 @@ This starts a web server locally on port `8080` that serves the files from the
 `dist/` directory, and then opens your default web browser at the right address.
 This requires a local installation of Node.js for the server.
 
-If you prefer just starting the server, run the following instead:
+If you prefer only starting the server and then opening your web browser yourself,
+run the following command instead:
 
 ```
 npm run server
