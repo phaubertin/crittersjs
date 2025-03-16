@@ -6,20 +6,14 @@ using a genetic algorithm to simulate evolution. Every 10 seconds, the five
 best critters of the latest generation are sent to the simulation rendered on 
 the web page.
 
-This is a JavaScript port of my [critters project written in C](https://github.com/phaubertin/critters).
+This is a TypeScript port of my [critters project written in C](https://github.com/phaubertin/critters).
 
 ![Screenshot](https://raw.githubusercontent.com/phaubertin/crittersjs/master/doc/screenshot.png)
 
 Build Requirements
 ------------------
 
-The build process requires the [Google Closure Compiler](https://developers.google.com/closure/compiler/),
-which is a JavaScript-to-JavaScript compiler/minifier. The latest version can be downloaded
-[here](https://github.com/google/closure-compiler/wiki/Binary-Downloads).
-
-Google Closure Compiler requires Java 8 to run.
-
-The build process also requires GNU make installed on your system.
+This project uses `npm` to install dependencies and perform the build.
 
 Runtime Requirements
 --------------------
@@ -29,24 +23,24 @@ The only runtime requirement is a web browser.
 Build Instructions
 ------------------
 
-Download the latest Google Closure Compiler from 
-Download the latest Google Closure Compiler from [here](https://dl.google.com/closure-compiler/compiler-latest.zip) (.zip)
-or [here](https://dl.google.com/closure-compiler/compiler-latest.tar.gz) (.tar.gz)
-and extract the downloaded .zip or .tar.gz file into the **closure/** directory. The
-compiler itself is a .jar file with a name similar to closure-compiler-v20190819.jar
-(the date may be different).
+First, install the build depencies:
+
 ```
-cd closure
-wget https://dl.google.com/closure-compiler/compiler-latest.tar.gz
-tar -xzf compiler-latest.tar.gz
-cd ..
+npm install --include=dev
 ```
-Change to the repository's top directory and run make:
+
+Then, build the project:
+
 ```
-make
+npm run build
 ```
-This command invokes the compiler with the correct arguments. The generated
-files are placed in the **target/** directory.
+
+Output files are placed in the `dist/` directory:
+
+* `critters.js` is the main JavaScript file.
+* `critters-worker.js` contains the code for the worker. No need to directly
+   reference this one in any HTML file, but it is referenced by `critters.js`.
+* Other files (HTML, CSS, etc.) are copied from the `static/` directory.
 
 Run Instructions
 ------------------
