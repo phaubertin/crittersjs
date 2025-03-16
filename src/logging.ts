@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Philippe Aubertin.
+/* Copyright (C) 2019-2025 Philippe Aubertin.
  * All rights reserved.
 
  * Redistribution and use in source and binary forms, with or without
@@ -25,62 +25,38 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-body {
-    margin: 0px;
-    background-color: white;
-    color: black;
-    text-align: left;
+import { MessageType, publishMessage } from './message';
+
+export interface Logger {
+    log(status: string): void;
 }
 
-a {
-  text-decoration: underline;
-  color: black;
+export class MessageLogger implements Logger {
+    log(status: string): void {
+        publishMessage({
+            type: MessageType.logStatus,
+            status,
+        });
+    }
 }
 
-div, p, article, figure, table, td, tr, svg {
-    margin: 0px;
-}
+export class HtmlElementAndConsoleLogger implements Logger {
+    constructor(
+        private readonly parent: HTMLElement,
+        private readonly origin: string,
+    ) {}
 
-div, article, svg {
-    padding: 0px;
-}
+    log(status: string): void {
+        console.log(this.origin + ': ' + status);
 
-p {
-    padding: 5px;
-}
+        let span = document.createElement('span');
+        span.appendChild(document.createTextNode(this.origin));
+        span.className = 'origin';
 
-h1 {
-    color: black;
-}
+        let p = document.createElement('p');
+        p.appendChild(span);
+        p.appendChild(document.createTextNode(status));
 
-h1 a {
-    color: black;
-    text-decoration: none;
-}
-
-h2, h3, h4, h5, h6 {
-    color: black;
-    text-align: left;
-}
-
-.wrapper>div {
-    min-width: 600px;
-    max-width: 1200px;
-    margin: 10px auto;
-}
-
-#critter-log {
-    background-color: rgb(220, 220, 220);
-}
-
-#critter-log p {
-    font-family : monospace;
-}
-
-#critter-log p .origin {
-    font-weight: bold;
-    color: rgb(0, 0, 150);
-}
-#critter-log p .origin:after {
-    content: ": ";
+        this.parent.appendChild(p);
+    }
 }

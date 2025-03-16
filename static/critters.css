@@ -1,0 +1,86 @@
+/* Copyright (C) 2019-2025 Philippe Aubertin.
+ * All rights reserved.
+
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the author nor the names of other contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+body {
+    margin: 0px;
+    background-color: white;
+    color: black;
+    text-align: left;
+}
+
+a {
+  text-decoration: underline;
+  color: black;
+}
+
+div, p, article, figure, table, td, tr, svg {
+    margin: 0px;
+}
+
+div, article, svg {
+    padding: 0px;
+}
+
+p {
+    padding: 5px;
+}
+
+h1 {
+    color: black;
+}
+
+h1 a {
+    color: black;
+    text-decoration: none;
+}
+
+h2, h3, h4, h5, h6 {
+    color: black;
+    text-align: left;
+}
+
+.wrapper>div {
+    min-width: 600px;
+    max-width: 1200px;
+    margin: 10px auto;
+}
+
+#critter-log {
+    background-color: rgb(220, 220, 220);
+}
+
+#critter-log p {
+    font-family : monospace;
+}
+
+#critter-log p .origin {
+    font-weight: bold;
+    color: rgb(0, 0, 150);
+}
+#critter-log p .origin:after {
+    content: ": ";
+}
