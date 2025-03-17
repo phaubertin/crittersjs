@@ -3,9 +3,6 @@ name: GitHub Pages build and deploy
 on:
   push:
     branches: [ main ]
-  # TODO remove this once the workflow is tested.
-  pull_request:
-      branches: [ '*' ]
 
 jobs:
   build:
