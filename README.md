@@ -6,7 +6,10 @@ using a genetic algorithm to simulate evolution. Every 10 seconds, the five
 best critters of the latest generation are sent to the simulation rendered on 
 the web page.
 
-This is a TypeScript port of my [critters project written in C](https://github.com/phaubertin/critters).
+See [the demo](https://phaubertin.github.io/crittersjs).
+
+This is a TypeScript port of my [original critters project](https://github.com/phaubertin/critters)
+written in C.
 
 ![Screenshot](https://raw.githubusercontent.com/phaubertin/crittersjs/master/doc/screenshot.png)
 
