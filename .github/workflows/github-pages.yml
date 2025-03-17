@@ -1,0 +1,54 @@
+name: GitHub Pages build and deploy
+
+on:
+  push:
+    branches: [ main ]
+  # TODO remove this once the workflow is tested.
+  pull_request:
+      branches: [ '*' ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      
+      - name: Install dependencies
+        run: npm install --include=dev
+      
+      - name: Build
+        run: npm run build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist/
+  
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: build
+
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{steps.deployment.outputs.page_url}}
+    
+    steps:
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
