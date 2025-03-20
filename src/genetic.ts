@@ -25,14 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import {
-    BEST_KEEP,
-    BEST_PRIORITY,
-    POPULATION_SIZE,
-    RAND_KEEP,
-    RAND_NEW,
-    WORST_DISCARD,
-} from './config';
+import { config } from './config';
 import { Genome } from './genome';
 import { Simulator, SimulatorResult } from './simulator';
 
@@ -50,7 +43,7 @@ export class GeneticAlgorithmOrchestrator {
     }
 
     start(): void {
-        this.population = Genome.randomPopulation(POPULATION_SIZE);
+        this.population = Genome.randomPopulation(config.geneticAlgorithm.populationSize);
         this.generation = 0;
     }
 
@@ -73,22 +66,22 @@ export class GeneticAlgorithmOrchestrator {
     private selectPool(simResults: SimulatorResult[]): Genome[] {
         const pool: Genome[] = [];
 
-        for (let n = 0; n < WORST_DISCARD; ++n) {
+        for (let n = 0; n < config.geneticAlgorithm.discardWorst; ++n) {
             simResults.pop();
         }
 
-        for (let idx = 0; idx < BEST_KEEP; ++idx) {
-            for (let n = 0; n < BEST_PRIORITY; ++n) {
+        for (let idx = 0; idx < config.geneticAlgorithm.keepBest; ++idx) {
+            for (let n = 0; n < config.geneticAlgorithm.bestWeight; ++n) {
                 pool.push(simResults[idx].genome);
             }
         }
 
-        for (let n = 0; n < RAND_KEEP; ++n) {
+        for (let n = 0; n < config.geneticAlgorithm.keepRandom; ++n) {
             const keepIndex = Math.floor(Math.random() * simResults.length);
             pool.push(simResults[keepIndex].genome);
         }
 
-        for (let n = 0; n < RAND_NEW; ++n) {
+        for (let n = 0; n < config.geneticAlgorithm.newRandom; ++n) {
             pool.push(Genome.random());
         }
 
@@ -98,7 +91,7 @@ export class GeneticAlgorithmOrchestrator {
     private generateNextPopulation(pool: Genome[]): Genome[] {
         const population: Genome[] = [];
 
-        for (let n = 0; n < POPULATION_SIZE; ++n) {
+        for (let n = 0; n < config.geneticAlgorithm.populationSize; ++n) {
             const mommyIndex = Math.floor(Math.random() * pool.length);
             const daddyIndex = Math.floor(Math.random() * pool.length);
 

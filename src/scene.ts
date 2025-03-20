@@ -26,22 +26,7 @@
  */
 
 import { BrainStimuli } from './brain';
-import {
-    BACKGROUND_COLOR,
-    BORDER_COLOR,
-    CRITTER_SIZE,
-    NUM_CRITTERS,
-    NUM_DANGER,
-    NUM_FOOD,
-    SCENE_BORDER,
-    SCENE_COLOR,
-    SCENE_HEIGHT,
-    SCENE_MARGIN,
-    SCENE_WIDTH,
-    SCENT_DISTANCE_LIMIT,
-    VISION_ANGLE_LIMIT,
-    VISION_DISTANCE_LIMIT,
-} from './config';
+import { config } from './config';
 import { MILLISECONDS_PER_SECOND } from './constants';
 import { Critter } from './critter';
 import { Genome } from './genome';
@@ -57,12 +42,12 @@ export class Scene {
         this.critters = [];
         this.things = [];
 
-        for (let idx = 0; idx < NUM_FOOD; ++idx) {
-            this.addThing(new Food(SCENE_WIDTH, SCENE_HEIGHT));
+        for (let idx = 0; idx < config.food.howMany; ++idx) {
+            this.addThing(new Food(config.scene.width, config.scene.height));
         }
 
-        for (let idx = 0; idx < NUM_DANGER; ++idx) {
-            this.addThing(new Danger(SCENE_WIDTH, SCENE_HEIGHT));
+        for (let idx = 0; idx < config.danger.howMany; ++idx) {
+            this.addThing(new Danger(config.scene.width, config.scene.height));
         }
 
         /* For the displayed scene, critters are created when the scene is created.
@@ -70,8 +55,10 @@ export class Scene {
          * trained, then taken out and other critters are added to take their place,
          * etc. */
         if (doAddCritters) {
-            for (let idx = 0; idx < NUM_CRITTERS; ++idx) {
-                this.addCritter(new Critter(Genome.random(), SCENE_WIDTH, SCENE_HEIGHT));
+            for (let idx = 0; idx < config.critter.howMany; ++idx) {
+                this.addCritter(
+                    new Critter(Genome.random(), config.scene.width, config.scene.height),
+                );
             }
         }
 
@@ -140,7 +127,7 @@ export class Scene {
             zero2Pi = false;
         }
 
-        let critterSizeSquared = CRITTER_SIZE * CRITTER_SIZE;
+        let critterSizeSquared = config.critter.size * config.critter.size;
         let dangerAngle = 0.0;
         let dangerIntensity = 0.0;
         let dangerOdor = 0.0;
@@ -175,12 +162,12 @@ export class Scene {
             }
 
             if (
-                distanceSquared < VISION_DISTANCE_LIMIT * VISION_DISTANCE_LIMIT ||
-                distanceSquared < SCENT_DISTANCE_LIMIT * SCENT_DISTANCE_LIMIT
+                distanceSquared < config.critter.vision.distance * config.critter.vision.distance ||
+                distanceSquared < config.critter.smell.distance * config.critter.smell.distance
             ) {
                 const distance = Math.sqrt(distanceSquared);
 
-                if (distance < VISION_DISTANCE_LIMIT) {
+                if (distance < config.critter.vision.distance) {
                     let targetAngle = Math.atan2(-dy, dx);
 
                     if (zero2Pi && targetAngle < 0.0) {
@@ -189,27 +176,32 @@ export class Scene {
 
                     const viewAngle = critterAngle - targetAngle;
 
-                    if (viewAngle < VISION_ANGLE_LIMIT && viewAngle > -VISION_ANGLE_LIMIT) {
+                    if (
+                        viewAngle < config.critter.vision.angle &&
+                        viewAngle > -config.critter.vision.angle
+                    ) {
                         const intensity =
-                            (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
+                            (config.critter.vision.distance - distance) *
+                            (1.0 / config.critter.vision.distance);
 
                         if (kind == ThingKind.food) {
                             if (intensity > foodIntensity) {
                                 foodIntensity = intensity;
-                                foodAngle = viewAngle * (1.0 / VISION_ANGLE_LIMIT);
+                                foodAngle = viewAngle * (1.0 / config.critter.vision.angle);
                             }
                         } else if (kind == ThingKind.danger) {
                             if (intensity > dangerIntensity) {
                                 dangerIntensity = intensity;
-                                dangerAngle = viewAngle * (1.0 / VISION_ANGLE_LIMIT);
+                                dangerAngle = viewAngle * (1.0 / config.critter.vision.angle);
                             }
                         }
                     }
                 }
 
-                if (distance < SCENT_DISTANCE_LIMIT) {
+                if (distance < config.critter.smell.distance) {
                     const intensity =
-                        (SCENT_DISTANCE_LIMIT - distance) * (1.0 / SCENT_DISTANCE_LIMIT);
+                        (config.critter.smell.distance - distance) *
+                        (1.0 / config.critter.smell.distance);
 
                     if (kind == ThingKind.food) {
                         if (intensity > foodOdor) {
@@ -228,9 +220,10 @@ export class Scene {
             /* top wall */
             const distance = critter.getY() / Math.sin(critterAngle);
 
-            if (distance < VISION_DISTANCE_LIMIT) {
+            if (distance < config.critter.vision.distance) {
                 const intensity =
-                    (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
+                    (config.critter.vision.distance - distance) *
+                    (1.0 / config.critter.vision.distance);
 
                 if (intensity > wallIntensity) {
                     wallIntensity = intensity;
@@ -239,11 +232,12 @@ export class Scene {
             }
         } else if (critterAngle < -0.0) {
             /* bottom wall */
-            const distance = (critter.getY() - SCENE_HEIGHT) / Math.sin(critterAngle);
+            const distance = (critter.getY() - config.scene.height) / Math.sin(critterAngle);
 
-            if (distance < VISION_DISTANCE_LIMIT) {
+            if (distance < config.critter.vision.distance) {
                 const intensity =
-                    (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
+                    (config.critter.vision.distance - distance) *
+                    (1.0 / config.critter.vision.distance);
 
                 if (intensity > wallIntensity) {
                     wallIntensity = intensity;
@@ -254,11 +248,12 @@ export class Scene {
 
         if (critterAngle > -Math.PI / 2 && critterAngle < Math.PI / 2) {
             /* right wall */
-            const distance = (SCENE_WIDTH - critter.getX()) / Math.cos(critterAngle);
+            const distance = (config.scene.width - critter.getX()) / Math.cos(critterAngle);
 
-            if (distance < VISION_DISTANCE_LIMIT) {
+            if (distance < config.critter.vision.distance) {
                 const intensity =
-                    (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
+                    (config.critter.vision.distance - distance) *
+                    (1.0 / config.critter.vision.distance);
 
                 if (intensity > wallIntensity) {
                     wallIntensity = intensity;
@@ -269,9 +264,10 @@ export class Scene {
             /* left wall */
             const distance = -critter.getX() / Math.cos(critterAngle);
 
-            if (distance < VISION_DISTANCE_LIMIT) {
+            if (distance < config.critter.vision.distance) {
                 const intensity =
-                    (VISION_DISTANCE_LIMIT - distance) * (1.0 / VISION_DISTANCE_LIMIT);
+                    (config.critter.vision.distance - distance) *
+                    (1.0 / config.critter.vision.distance);
 
                 if (intensity > wallIntensity) {
                     const sign = critterAngle < 0 ? -1 : 1;
@@ -320,34 +316,39 @@ export class Scene {
          *  +----------------------------------------------------------------+
          *
          * */
-        const backgroundWidth = SCENE_WIDTH + 2 * SCENE_MARGIN;
-        const backgroundHeight = SCENE_HEIGHT + 2 * SCENE_MARGIN;
+        const backgroundWidth = config.scene.width + 2 * config.scene.margin;
+        const backgroundHeight = config.scene.height + 2 * config.scene.margin;
 
         svg.setViewbox(backgroundWidth, backgroundHeight);
 
         const background = svg.addRectangle(0, 0, backgroundWidth, backgroundHeight);
 
-        background.setFillColor(BACKGROUND_COLOR);
+        background.setFillColor(config.scene.colors.background);
 
         const border = svg.addRectangle(
-            SCENE_BORDER,
-            SCENE_BORDER,
-            SCENE_WIDTH + 2 * SCENE_BORDER,
-            SCENE_HEIGHT + 2 * SCENE_BORDER,
+            config.scene.border,
+            config.scene.border,
+            config.scene.width + 2 * config.scene.border,
+            config.scene.height + 2 * config.scene.border,
         );
-        border.setStrokeColor(BORDER_COLOR);
+        border.setStrokeColor(config.scene.colors.border);
 
-        const scene = svg.addRectangle(SCENE_MARGIN, SCENE_MARGIN, SCENE_WIDTH, SCENE_HEIGHT);
+        const scene = svg.addRectangle(
+            config.scene.margin,
+            config.scene.margin,
+            config.scene.width,
+            config.scene.height,
+        );
 
-        scene.setFillColor(SCENE_COLOR);
+        scene.setFillColor(config.scene.colors.scene);
     }
 
     renderSvg(): void {
         for (const thing of this.things) {
-            thing.renderSvg(SCENE_MARGIN, SCENE_MARGIN);
+            thing.renderSvg(config.scene.margin, config.scene.margin);
         }
         for (const critter of this.critters) {
-            critter.renderSvg(SCENE_MARGIN, SCENE_MARGIN);
+            critter.renderSvg(config.scene.margin, config.scene.margin);
         }
     }
 }

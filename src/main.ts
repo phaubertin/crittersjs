@@ -25,7 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { WORKER_FILE_NAME } from './config';
+import { config } from './config';
 import { Genome } from './genome';
 import { Logger, HtmlElementAndConsoleLogger } from './logging';
 import { deserializeMessage, MessageType } from './message';
@@ -49,7 +49,7 @@ export class CrittersApplication {
     private startWorker(): void {
         this.mainLogger.log('Starting worker.');
 
-        const worker = new Worker(WORKER_FILE_NAME);
+        const worker = new Worker(config.worker.filename);
 
         worker.onmessage = this.handleWorkerMessageEvent.bind(this);
     }

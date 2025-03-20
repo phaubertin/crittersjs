@@ -27,93 +27,81 @@
 
 import { Color } from './color';
 
-export const SCENE_WIDTH = 800;
-
-export const SCENE_HEIGHT = 500;
-
-export const SCENE_BORDER = 10;
-
-export const SCENE_MARGIN = 20;
-
-export const BACKGROUND_COLOR = Color.rgb(0, 0, 0);
-
-export const BORDER_COLOR = Color.rgb(200, 200, 200);
-
-export const SCENE_COLOR = Color.rgb(32, 32, 32);
-
-export const NUM_FOOD = 4;
-
-export const FOOD_COLOR = Color.rgb(0, 200, 0);
-
-export const FOOD_SPEED = 10.0;
-
-export const FOOD_SIZE = 6.0;
-
-export const NUM_DANGER = 2;
-
-export const DANGER_COLOR = Color.rgb(200, 0, 0);
-
-export const DANGER_SPEED = 40.0;
-
-export const DANGER_SIZE = 16.0;
-
-export const NUM_CRITTERS = 5;
-
-export const CRITTER_COLOR = Color.rgb(100, 100, 200);
-
-export const CRITTER_SIZE = 10.0;
-
-export const VISION_DISTANCE_LIMIT = 600.0;
-
-export const VISION_ANGLE_LIMIT = (0.7 * Math.PI) / 2;
-
-export const SCENT_DISTANCE_LIMIT = 250.0;
-
-/* In viewbox pixels per second */
-export const BASE_SPEED_FORWARD = 100.0;
-
-/* In radian per second */
-export const BASE_SPEED_ANGULAR = 0.2 * Math.PI;
-
-/* Number of neurons with a rectifier activation function (ReLU) in the hidden layer.
- * Must be a multiple of four. */
-export const GENOME_HIDDEN_RELU = 8;
-
-/* All weights are between plus or minus this value. */
-export const GENOME_WEIGHT_AMPLITUDE = 20.0;
-
-/* Number of genomes in a generation */
-export const POPULATION_SIZE = 200;
-
-/* Number of selected genomes with top fitness score */
-export const BEST_KEEP = 9;
-
-/* Number of randomly-selected genomes */
-export const RAND_KEEP = 48;
-
-/* Number of novel randomly-generated genomes */
-export const RAND_NEW = 6;
-
-/* Weight of top fitness score genomes (i.e. how many time each is added to the pool) */
-export const BEST_PRIORITY = 4;
-
-/* Number of genomes with the lowest fitness score that are discarded */
-export const WORST_DISCARD = 50;
-
-export const SIM_TIME = 40; /* in seconds */
-
-export const TIME_STEP = 200; /* in milliseconds */
-
-/* Fitness score: number of points gained each time food is captured */
-export const FOOD_COST = 1.0;
-
-/* Fitness score: number of points gained (negative for loss) each time the critter is captured */
-export const DANGER_COST = -50.0;
-
-export const FIRST_UPDATE = 2.0; /* In seconds */
-
-export const UPDATE_INTERVAL = 10.0; /* In seconds */
-
-export const LOG_INTERVAL = 50; /* In generations */
-
-export const WORKER_FILE_NAME = 'critters-worker.js';
+export const config = {
+    critter: {
+        baseSpeed: {
+            // in viewbox pixels per second
+            forward: 100,
+            // in radian per second
+            angular: 0.2 * Math.PI,
+        },
+        color: Color.rgb(100, 100, 200),
+        howMany: 5,
+        smell: {
+            distance: 250,
+        },
+        size: 10,
+        vision: {
+            angle: (0.7 * Math.PI) / 2,
+            distance: 600,
+        },
+    },
+    danger: {
+        color: Color.rgb(200, 0, 0),
+        howMany: 2,
+        size: 16,
+        speed: 40,
+    },
+    fitnessScore: {
+        // number of points gained each time food is captured
+        foodWeight: 1,
+        // number of points gained (negative for loss) each time the critter is captured
+        dangerWeight: -50,
+    },
+    food: {
+        color: Color.rgb(0, 200, 0),
+        howMany: 4,
+        size: 6,
+        speed: 10,
+    },
+    geneticAlgorithm: {
+        bestWeight: 4,
+        discardWorst: 50,
+        keepBest: 9,
+        keepRandom: 48,
+        newRandom: 6,
+        populationSize: 200,
+    },
+    neuralNetwork: {
+        // number of neurons in the hidden layer
+        howManyHidden: 8,
+        // All weights are between plus or minus this value.
+        weightAmplitude: 20,
+    },
+    scene: {
+        border: 10,
+        colors: {
+            background: Color.rgb(0, 0, 0),
+            border: Color.rgb(200, 200, 200),
+            scene: Color.rgb(32, 32, 32),
+        },
+        height: 500,
+        margin: 20,
+        width: 800,
+    },
+    simulation: {
+        // in seconds
+        duration: 40,
+        // in milliseconds
+        step: 200,
+    },
+    worker: {
+        filename: 'critters-worker.js',
+        // in seconds
+        firstUpdate: 2,
+        // in generations
+        logInterval: 50,
+        // in seconds
+        updateInterval: 10,
+    },
+};

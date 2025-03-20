@@ -25,7 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { BEST_KEEP, FIRST_UPDATE, LOG_INTERVAL, NUM_CRITTERS, UPDATE_INTERVAL } from './config';
+import { config } from './config';
 import { MILLISECONDS_PER_SECOND } from './constants';
 import { GeneticAlgorithmOrchestrator } from './genetic';
 import { Genome } from './genome';
@@ -47,7 +47,7 @@ export class CrittersWorker {
     }
 
     private loop(): void {
-        let updateDue = performance.now() + FIRST_UPDATE * MILLISECONDS_PER_SECOND;
+        let updateDue = performance.now() + config.worker.firstUpdate * MILLISECONDS_PER_SECOND;
 
         while (true) {
             const timeStart = performance.now();
@@ -58,12 +58,12 @@ export class CrittersWorker {
 
             if (timeEnd > updateDue) {
                 this.updateMain(simResults);
-                updateDue = timeEnd + UPDATE_INTERVAL * MILLISECONDS_PER_SECOND;
+                updateDue = timeEnd + config.worker.updateInterval * MILLISECONDS_PER_SECOND;
             }
 
             const generation = this.geneticAlgorithmOrchestrator.getGeneration();
 
-            if (generation % LOG_INTERVAL == 0) {
+            if (generation % config.worker.logInterval == 0) {
                 this.logGeneration(simResults, generation, timeEnd - timeStart);
             }
         }
@@ -72,7 +72,7 @@ export class CrittersWorker {
     private updateMain(simResults: SimulatorResult[]): void {
         const genomes: Genome[] = [];
 
-        for (let idx = 0; idx < NUM_CRITTERS; ++idx) {
+        for (let idx = 0; idx < config.critter.howMany; ++idx) {
             genomes.push(simResults[idx].genome);
         }
 
@@ -104,11 +104,11 @@ export class CrittersWorker {
     private computeFitnessScore(simResult: readonly SimulatorResult[]): number {
         let sum = 0.0;
 
-        for (let idx = 0; idx < BEST_KEEP; ++idx) {
+        for (let idx = 0; idx < config.geneticAlgorithm.keepBest; ++idx) {
             sum += simResult[idx].fitness;
         }
 
-        return sum / BEST_KEEP;
+        return sum / config.geneticAlgorithm.keepBest;
     }
 
     private formatFitnessScore(fitnessScore: number): string {

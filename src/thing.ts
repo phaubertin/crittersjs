@@ -26,14 +26,7 @@
  */
 
 import { Boing } from './boing';
-import {
-    DANGER_COLOR,
-    DANGER_SIZE,
-    DANGER_SPEED,
-    FOOD_COLOR,
-    FOOD_SIZE,
-    FOOD_SPEED,
-} from './config';
+import { config } from './config';
 import { SvgCanvas, SvgShape } from './svg';
 
 export enum ThingKind {
@@ -57,7 +50,7 @@ export class Food implements Thing {
     private circle: SvgShape | undefined;
 
     constructor(sceneWidth: number, sceneHeight: number) {
-        this.boing = new Boing(sceneWidth, sceneHeight, FOOD_SPEED);
+        this.boing = new Boing(sceneWidth, sceneHeight, config.food.speed);
     }
 
     getKind(): ThingKind.food {
@@ -85,8 +78,8 @@ export class Food implements Thing {
     }
 
     createSvg(svg: SvgCanvas): void {
-        this.circle = svg.addCircle(0, 0, FOOD_SIZE);
-        this.circle.setFillColor(FOOD_COLOR);
+        this.circle = svg.addCircle(0, 0, config.food.size);
+        this.circle.setFillColor(config.food.color);
     }
 
     renderSvg(offsetX: number, offsetY: number): void {
@@ -102,7 +95,7 @@ export class Danger implements Thing {
     private rect: SvgShape | undefined;
 
     constructor(sceneWidth: number, sceneHeight: number) {
-        this.boing = new Boing(sceneWidth, sceneHeight, DANGER_SPEED);
+        this.boing = new Boing(sceneWidth, sceneHeight, config.danger.speed);
     }
 
     getKind(): ThingKind.danger {
@@ -131,12 +124,12 @@ export class Danger implements Thing {
 
     createSvg(svg: SvgCanvas): void {
         this.rect = svg.addRectangle(
-            0 - DANGER_SIZE / 2,
-            0 - DANGER_SIZE / 2,
-            DANGER_SIZE * Math.SQRT1_2,
-            DANGER_SIZE * Math.SQRT1_2,
+            0 - config.danger.size / 2,
+            0 - config.danger.size / 2,
+            config.danger.size * Math.SQRT1_2,
+            config.danger.size * Math.SQRT1_2,
         );
-        this.rect.setFillColor(DANGER_COLOR);
+        this.rect.setFillColor(config.danger.color);
         this.rect.setRotate(45);
     }
 
