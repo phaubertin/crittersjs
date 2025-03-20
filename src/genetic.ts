@@ -31,20 +31,13 @@ import { Simulator, SimulatorResult } from './simulator';
 
 export class GeneticAlgorithmOrchestrator {
     private population: Genome[];
-    private generation: number;
 
     constructor(private readonly simulator: Simulator) {
         this.population = [];
-        this.generation = 0;
-    }
-
-    getGeneration(): number {
-        return this.generation;
     }
 
     start(): void {
         this.population = Genome.randomPopulation(config.geneticAlgorithm.populationSize);
-        this.generation = 0;
     }
 
     run(): SimulatorResult[] {
@@ -57,8 +50,6 @@ export class GeneticAlgorithmOrchestrator {
         const pool = this.selectPool(simResults);
 
         this.population = this.generateNextPopulation(pool);
-
-        ++this.generation;
 
         return simResults;
     }
