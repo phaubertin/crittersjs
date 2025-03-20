@@ -25,13 +25,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { NUM_CRITTERS, SCENE_HEIGHT, SCENE_WIDTH, SIM_TIME, TIME_STEP } from './config';
+import { config } from './config';
 import { MILLISECONDS_PER_SECOND } from './constants';
 import { Critter } from './critter';
 import { Genome } from './genome';
 import { Scene } from './scene';
 
-const SIM_STEPS = (SIM_TIME * 1000) / TIME_STEP;
+const SIM_STEPS = (config.simulation.duration * MILLISECONDS_PER_SECOND) / config.simulation.step;
 
 export interface SimulatorResult {
     fitness: number;
@@ -44,16 +44,16 @@ export class Simulator {
     run(population: readonly Genome[]): SimulatorResult[] {
         const result: SimulatorResult[] = [];
 
-        for (let idx = 0; idx < population.length; idx += NUM_CRITTERS) {
-            const subPopulation = population.slice(idx, idx + NUM_CRITTERS);
+        for (let idx = 0; idx < population.length; idx += config.critter.howMany) {
+            const subPopulation = population.slice(idx, idx + config.critter.howMany);
 
             subPopulation.forEach((genome) =>
-                this.scene.addCritter(new Critter(genome, SCENE_WIDTH, SCENE_HEIGHT)),
+                this.scene.addCritter(new Critter(genome, config.scene.width, config.scene.height)),
             );
 
             /* simulate scene */
             for (let step = 0; step < SIM_STEPS; ++step) {
-                this.scene.updatePosition(TIME_STEP / MILLISECONDS_PER_SECOND);
+                this.scene.updatePosition(config.simulation.step / MILLISECONDS_PER_SECOND);
             }
 
             /* harvest time */

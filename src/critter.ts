@@ -26,14 +26,7 @@
  */
 
 import { Brain, BrainControlOutput, BrainStimuli } from './brain';
-import {
-    BASE_SPEED_ANGULAR,
-    BASE_SPEED_FORWARD,
-    CRITTER_COLOR,
-    CRITTER_SIZE,
-    DANGER_COST,
-    FOOD_COST,
-} from './config';
+import { config } from './config';
 import { Genome } from './genome';
 import { SvgCanvas, SvgShape } from './svg';
 
@@ -72,7 +65,8 @@ export class Critter {
     }
 
     computeFitness(): number {
-        return FOOD_COST * this.ateFoodCount + DANGER_COST * this.diedCount;
+        const { dangerWeight, foodWeight } = config.fitnessScore;
+        return foodWeight * this.ateFoodCount + dangerWeight * this.diedCount;
     }
 
     updateControl(stimuli: BrainStimuli): void {
@@ -83,7 +77,7 @@ export class Critter {
         /* Update position. */
 
         let speed =
-            BASE_SPEED_FORWARD *
+            config.critter.baseSpeed.forward *
             /* Arithmetic mean */
             (this.brainControl.rightSpeed + this.brainControl.leftSpeed) *
             0.5;
@@ -109,7 +103,8 @@ export class Critter {
         /* Update angle. */
 
         let omega =
-            BASE_SPEED_ANGULAR * (this.brainControl.rightSpeed - this.brainControl.leftSpeed);
+            config.critter.baseSpeed.angular *
+            (this.brainControl.rightSpeed - this.brainControl.leftSpeed);
         let deltaAngle = timeDelta * omega;
 
         this.angle += deltaAngle;
@@ -153,11 +148,11 @@ export class Critter {
     }
 
     createSvg(svg: SvgCanvas): void {
-        this.body = svg.addCircle(0 - 0.3 * CRITTER_SIZE, 0, 0.7 * CRITTER_SIZE);
-        this.head = svg.addCircle(0.6 * CRITTER_SIZE, 0, 0.4 * CRITTER_SIZE);
+        this.body = svg.addCircle(0 - 0.3 * config.critter.size, 0, 0.7 * config.critter.size);
+        this.head = svg.addCircle(0.6 * config.critter.size, 0, 0.4 * config.critter.size);
 
-        this.body.setFillColor(CRITTER_COLOR);
-        this.head.setFillColor(CRITTER_COLOR);
+        this.body.setFillColor(config.critter.color);
+        this.head.setFillColor(config.critter.color);
     }
 
     renderSvg(offsetX: number, offsetY: number): void {

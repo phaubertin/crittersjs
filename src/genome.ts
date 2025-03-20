@@ -27,7 +27,7 @@
 
 import { BRAIN_NUM_INPUTS, BRAIN_NUM_OUTPUTS } from './brain';
 import { Color } from './color';
-import { GENOME_HIDDEN_RELU, GENOME_WEIGHT_AMPLITUDE } from './config';
+import { config } from './config';
 
 export interface GenomeParams {
     color: string;
@@ -49,8 +49,14 @@ export class Genome {
     static random(): Genome {
         return new Genome({
             color: Color.random(50, 250),
-            hiddenWeights: this.randomWeightMatrix(GENOME_HIDDEN_RELU, BRAIN_NUM_INPUTS + 1),
-            outputWeights: this.randomWeightMatrix(BRAIN_NUM_OUTPUTS, GENOME_HIDDEN_RELU + 1),
+            hiddenWeights: this.randomWeightMatrix(
+                config.neuralNetwork.howManyHidden,
+                BRAIN_NUM_INPUTS + 1,
+            ),
+            outputWeights: this.randomWeightMatrix(
+                BRAIN_NUM_OUTPUTS,
+                config.neuralNetwork.howManyHidden + 1,
+            ),
         });
     }
 
@@ -71,7 +77,7 @@ export class Genome {
     }
 
     static randomWeight(): number {
-        return 2.0 * GENOME_WEIGHT_AMPLITUDE * (Math.random() - 0.5);
+        return 2.0 * config.neuralNetwork.weightAmplitude * (Math.random() - 0.5);
     }
 
     static randomPopulation(size: number): Genome[] {
