@@ -85,7 +85,7 @@ export const config = {
             border: Color.rgb(200, 200, 200),
             scene: Color.rgb(32, 32, 32),
         },
-        height: 500,
+        height: 400,
         margin: 20,
         width: 800,
     },
