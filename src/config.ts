@@ -99,6 +99,7 @@ export const config = {
         filename: 'critters-worker.js',
         // in seconds
         firstUpdate: 2,
+        generations: 1000,
         // in generations
         logInterval: 50,
         // in seconds

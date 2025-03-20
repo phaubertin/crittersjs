@@ -42,26 +42,28 @@ export class CrittersWorker {
 
     start(): void {
         this.logger.log('Worker is alive!');
+
         this.geneticAlgorithmOrchestrator.start();
+
         this.loop();
+
+        this.logger.log('Worker is done!');
     }
 
     private loop(): void {
         let updateDue = performance.now() + config.worker.firstUpdate * MILLISECONDS_PER_SECOND;
 
-        while (true) {
+        for (let generation = 1; generation <= config.worker.generations; ++generation) {
             const timeStart = performance.now();
 
             const simResults = this.geneticAlgorithmOrchestrator.run();
 
             const timeEnd = performance.now();
 
-            if (timeEnd > updateDue) {
+            if (timeEnd > updateDue || generation == config.worker.generations) {
                 this.updateMain(simResults);
                 updateDue = timeEnd + config.worker.updateInterval * MILLISECONDS_PER_SECOND;
             }
-
-            const generation = this.geneticAlgorithmOrchestrator.getGeneration();
 
             if (generation % config.worker.logInterval == 0) {
                 this.logGeneration(simResults, generation, timeEnd - timeStart);
