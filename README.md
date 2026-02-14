@@ -31,7 +31,7 @@ Build Instructions
 First, install the build depencies:
 
 ```
-npm install --include=dev
+npm install
 ```
 
 Then, build the project:
