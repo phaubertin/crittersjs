@@ -1,2 +1,2 @@
 FROM nginx:alpine-slim
-COPY dist/* /usr/share/nginx/html/
+COPY dst/* /usr/share/nginx/html/
