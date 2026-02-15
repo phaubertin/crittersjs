@@ -22,5 +22,8 @@ jobs:
     - name: Build
       run: npm run build
     
+    - name: Build container image
+      run: docker build -t crittersjs .
+    
     - name: Lint
       run: npm run lint
