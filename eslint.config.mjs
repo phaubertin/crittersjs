@@ -1,3 +1,4 @@
+import globals from 'globals';
 import prettierPlugin from 'eslint-plugin-prettier';
 import prettierRecommended from 'eslint-plugin-prettier/recommended';
 import tseslint from '@typescript-eslint/eslint-plugin';
@@ -15,6 +16,9 @@ export default [
             parser: tsparser,
             parserOptions: {
                 project: './tsconfig.json',
+            },
+            globals: {
+                ...globals.browser,
             },
         },
 
