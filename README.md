@@ -2,9 +2,7 @@
 
 Critters must catch food (green circles) and avoid dangers (red squares). The 
 brain of each critter is a small feedforward neural network. Brains are trained 
-using a genetic algorithm to simulate evolution. Every 10 seconds, the five 
-best critters of the latest generation are sent to the simulation rendered on 
-the web page.
+using a genetic algorithm to simulate evolution. The five best critters of the latest generation are sent to the simulation rendered on the web page periodically.
 
 See [the demo](https://phaubertin.github.io/crittersjs).
 
@@ -47,11 +45,29 @@ Output files are placed in the `dist/` directory:
    reference this one in any HTML file, but it is referenced by `critters.js`.
 * Other files (HTML, CSS, etc.) are copied from the `static/` directory.
 
+Finally, you can build the Docker container (optional):
+
+```
+docker build -t crittersjs .
+```
+
 Run Instructions
 ------------------
 
+### Running from the Container
+
+If you built the container, you can run it as follow:
+
+```
+docker run -d -p8080:80 --name crittersjs crittersjs
+```
+
+Then, navigate with your web browser of choice to [http://127.0.0.1:8080](http://127.0.0.1:8080).
+
+### Running without the Container
+
 Once built, the `dist/` directory contains the complete demo as a single web
-page (`index.html`) that loads the necessary script. One complication to keep
+page (`index.html`) that loads the necessary script. One complication to keep
 in mind for local testing, however, is that some web browsers do not allow
 running a worker from a script loaded from a local file. See
 [this Stack Overflow question](https://stackoverflow.com/questions/21408510/chrome-cant-load-web-worker)
