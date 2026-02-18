@@ -16,12 +16,14 @@ Build Requirements
 
 This project uses `npm` to install dependencies and perform the build.
 
+In order to build the container (optional), Docker is required.
+
 Runtime Requirements
 --------------------
 
 A web browser is required.
 
-Node.js is also required to start the server for local testing.
+Node.js is required to start the server for local testing. Alternatively, if you want to run the container, Docker is required instead.
 
 Build Instructions
 ------------------
