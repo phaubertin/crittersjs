@@ -1,10 +1,10 @@
 # Crittersjs #
 
+See [the demo](https://phaubertin.github.io/crittersjs).
+
 Critters must catch food (green circles) and avoid dangers (red squares). The 
 brain of each critter is a small feedforward neural network. Brains are trained 
 using a genetic algorithm to simulate evolution. The five best critters of the latest generation are sent to the simulation rendered on the web page periodically.
-
-See [the demo](https://phaubertin.github.io/crittersjs).
 
 This is a TypeScript port of my [original critters project](https://github.com/phaubertin/critters)
 written in C.
