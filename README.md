@@ -11,6 +11,31 @@ written in C.
 
 ![Screenshot](https://raw.githubusercontent.com/phaubertin/crittersjs/master/doc/screenshot.png)
 
+Try it!
+-------
+
+If you want to see this project in action without building anything, you have two options...
+
+### Demo on GitHub Pages
+
+See [the demo](https://phaubertin.github.io/crittersjs) hosted on GitHub Pages.
+
+### Container Image from Public Registry
+
+If you have Docker installed, you can pull the pre-built image from a public container registry:
+
+```
+docker pull ghcr.io/phaubertin/crittersjs
+```
+
+Start the container as follow:
+
+```
+docker run -d -p8080:80 --name crittersjs ghcr.io/phaubertin/crittersjs
+```
+
+Then, navigate with your web browser of choice to [http://127.0.0.1:8080](http://127.0.0.1:8080).
+
 Build Requirements
 ------------------
 
