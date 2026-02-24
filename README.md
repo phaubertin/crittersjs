@@ -33,7 +33,7 @@ docker pull ghcr.io/phaubertin/crittersjs
 Start the container as follow:
 
 ```
-docker run -d -p8080:80 --name crittersjs ghcr.io/phaubertin/crittersjs
+docker run -d -p127.0.0.1:8080:80 --name crittersjs ghcr.io/phaubertin/crittersjs
 ```
 
 Then, navigate with your web browser of choice to [http://127.0.0.1:8080](http://127.0.0.1:8080).
@@ -88,7 +88,7 @@ Run Instructions
 If you built the container, you can run it as follow:
 
 ```
-docker run -d -p8080:80 --name crittersjs crittersjs
+docker run -d -p127.0.0.1:8080:80 --name crittersjs crittersjs
 ```
 
 Then, navigate with your web browser of choice to [http://127.0.0.1:8080](http://127.0.0.1:8080).
