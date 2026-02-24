@@ -7,6 +7,5 @@ updates:
   schedule:
     interval: daily
   groups:
-    all-deps:
-      patterns:
-        - "*"
+    everything:
+      patterns: ["*"]
