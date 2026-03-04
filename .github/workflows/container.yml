@@ -46,6 +46,7 @@ jobs:
           path: ${IMAGE_FILE}
           archive: false
           retention-days: 7
+          if-no-files-found: error
   
   push-to-ghcr:
     runs-on: ubuntu-latest
