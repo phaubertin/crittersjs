@@ -73,7 +73,7 @@ jobs:
           skip-decompress: true
       
       - name: Load container image
-        run: gzip -c -d ${IMAGE_FILE} > docker load
+        run: gzip -c -d ${IMAGE_FILE} | docker load
       
       - name: Check container image ID
         run: |
@@ -121,7 +121,7 @@ jobs:
           skip-decompress: true
 
       - name: Load container image
-        run: gzip -c -d ${IMAGE_FILE} > docker load
+        run: gzip -c -d ${IMAGE_FILE} | docker load
       
       - name: Check container image ID
         run: |
