@@ -1,4 +1,4 @@
-name: Container image
+name: Container Image
 
 on:
   push:
@@ -71,6 +71,7 @@ jobs:
         with:
           name: container
           path: ${{ env.IMAGE_FILE }}
+          skip-decompress: true
       
       - name: Load container image
         run: gzip -c -d ${IMAGE_FILE} > docker load
@@ -119,6 +120,7 @@ jobs:
         with:
           name: container
           path: ${{ env.IMAGE_FILE }}
+          skip-decompress: true
 
       - name: Load container image
         run: gzip -c -d ${IMAGE_FILE} > docker load
