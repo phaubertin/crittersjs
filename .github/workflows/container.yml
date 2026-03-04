@@ -4,18 +4,21 @@ on:
   push:
     branches: [ main ]
 
+env:
+  LOCAL_IMAGE: crittersjs
+  IMAGE_FILE: crittersjs-image-${{ github.sha }}.tar.gz
+  TAG: ${{ github.sha }}
+
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
     permissions:
-      packages: write
       contents: read
-    
-    env:
-      GHCR_IMAGE: ghcr.io/${{ github.repository }}
-      TAG: ${{ github.sha }}
+
+    outputs:
+      image-id: ${{ steps.save-id.outputs.image-id }}
 
     steps:
       - uses: actions/checkout@v4
@@ -27,12 +30,58 @@ jobs:
         run: npm run build
 
       - name: Build container image
-        run: |
-          docker build \
-          -t ${GHCR_IMAGE}:${TAG} \
-          -t ${GHCR_IMAGE}:latest \
-          .
+        run: docker build -t ${LOCAL_IMAGE}:${TAG} .
+
+      - name: Save container image ID as output
+        id: save-id
+        run: echo "image-id=$(docker image ls -q --no-trunc ${LOCAL_IMAGE}:${TAG})" | tee -a "$GITHUB_OUTPUT"
       
+      - name: Save container image
+        run: docker save ${LOCAL_IMAGE}:${TAG} | gzip > ${IMAGE_FILE}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: container
+          path: ${IMAGE_FILE}
+          archive: false
+          retention-days: 7
+  
+  push-to-ghcr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: build
+
+    permissions:
+      contents: read
+      packages: write
+
+    env:
+      GHCR_IMAGE: ghcr.io/${{ github.repository }}
+      IMAGE_ID: ${{ needs.build.outputs.image-id }}
+    
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: container
+          path: ${IMAGE_FILE}
+      
+      - name: Load container image
+        run: gzip -c -d ${IMAGE_FILE} > docker load
+      
+      - name: Check container image ID
+        run: |
+          id="$(docker image ls -q --no-trunc ${LOCAL_IMAGE}:${TAG})"
+          echo "Expected image ID: $IMAGE_ID"
+          echo "Actual image ID:   $id"
+          [ -n "$id" ] && [ "$id" = "$IMAGE_ID" ]
+      
+      - name: Tag container image
+        run: |
+          docker tag ${LOCAL_IMAGE}:${TAG} ${GHCR_IMAGE}:${TAG}
+          docker tag ${LOCAL_IMAGE}:${TAG} ${GHCR_IMAGE}:latest
+
       - name: Login to GHCR
         run: echo ${{ github.token }} | docker login ghcr.io -u ${{github.actor}} --password-stdin
       
@@ -40,3 +89,59 @@ jobs:
         run: |
           docker push ${GHCR_IMAGE}:${TAG}
           docker push ${GHCR_IMAGE}:latest
+  
+  push-to-ecr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: build
+
+    permissions:
+      contents: read
+      id-token: write
+
+    environment:
+      name: aws
+
+    env:
+      ECR_IMAGE: public.ecr.aws/${{ github.repository }}
+      IMAGE_ID: ${{ needs.build.outputs.image-id }}
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: container
+          path: ${IMAGE_FILE}
+
+      - name: Load container image
+        run: gzip -c -d ${IMAGE_FILE} > docker load
+      
+      - name: Check container image ID
+        run: |
+          id="$(docker image ls -q --no-trunc ${LOCAL_IMAGE}:${TAG})"
+          echo "Expected image ID: $IMAGE_ID"
+          echo "Actual image ID:   $id"
+          [ -n "$id" ] && [ "$id" = "$IMAGE_ID" ]
+      
+      - name: Tag container image
+        run: |
+          docker tag ${LOCAL_IMAGE}:${TAG} ${ECR_IMAGE}:${TAG}
+          docker tag ${LOCAL_IMAGE}:${TAG} ${ECR_IMAGE}:latest
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.ASSUME_ROLE_ARN }}
+          role-session-name: push-ecr-${{ github.sha }}
+          # Needs to be us-east-1 for ECR public
+          aws-region: us-east-1
+
+      - name: Login to ECR (public)
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          registry-type: public
+
+      - name: Push image to ECR
+        run: |
+          docker push ${ECR_IMAGE}:${TAG}
+          docker push ${ECR_IMAGE}:latest
