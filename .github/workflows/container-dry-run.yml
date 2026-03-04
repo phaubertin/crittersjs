@@ -43,7 +43,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: container
-          path: ${IMAGE_FILE}
+          path: ${{ env.IMAGE_FILE }}
           archive: false
           retention-days: 7
           if-no-files-found: error
@@ -65,7 +65,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: container
-          path: ${IMAGE_FILE}
+          path: ${{ env.IMAGE_FILE }}
       
       - name: Load container image
         run: gzip -c -d ${IMAGE_FILE} > docker load
@@ -99,7 +99,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: container
-          path: ${IMAGE_FILE}
+          path: ${{ env.IMAGE_FILE }}
 
       - name: Load container image
         run: gzip -c -d ${IMAGE_FILE} > docker load
