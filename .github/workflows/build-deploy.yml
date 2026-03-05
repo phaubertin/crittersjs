@@ -109,6 +109,7 @@ jobs:
     name: Push to ECR (public.ecr.aws)
     
     runs-on: ubuntu-latest
+    # Should match the aws-actions/configure-aws-credentials role duration
     timeout-minutes: 5
     needs: build
 
@@ -151,6 +152,8 @@ jobs:
         with:
           role-to-assume: ${{ secrets.ASSUME_ROLE_ARN }}
           role-session-name: push-ecr-${{ github.sha }}
+          # Should match the job timeout
+          role-duration-seconds: 300
           # Needs to be us-east-1 for ECR public
           aws-region: us-east-1
 
