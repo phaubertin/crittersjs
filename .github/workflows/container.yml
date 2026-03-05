@@ -61,6 +61,10 @@ jobs:
       contents: read
       packages: write
 
+    environment:
+      name: ghcr
+      url: https://github.com/${{ github.repository }}/pkgs/container/crittersjs
+
     env:
       GHCR_IMAGE: ghcr.io/${{ github.repository }}
       IMAGE_ID: ${{ needs.build.outputs.image-id }}
@@ -108,6 +112,7 @@ jobs:
 
     environment:
       name: aws
+      url: https://gallery.ecr.aws/${{ github.repository }}
 
     env:
       ECR_IMAGE: public.ecr.aws/${{ github.repository }}
