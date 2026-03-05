@@ -1,0 +1,5 @@
+<svg viewBox="0 0 20 20">
+    <rect x="0" y="0" width="20" height="20" fill="white"></rect>
+	<circle cx="-3" cy="0" r="7" fill="rgb(100, 100, 200)" transform="translate(10.5, 9.5) rotate(-45)"></circle>
+	<circle cx="6" cy="0" r="4" transform="translate(10.5, 9.5) rotate(-45)" fill="rgb(245, 152, 112)"></circle>
+</svg>
