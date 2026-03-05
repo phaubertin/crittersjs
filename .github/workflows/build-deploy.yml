@@ -3,6 +3,15 @@ name: Build and Deploy
 on:
   push:
     branches: [ main ]
+    paths:
+      - '.github/workflows/build-deploy.yml'
+      - 'src/**'
+      - 'static/**'
+      - 'Dockerfile'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+      - 'webpack.config.js'
 
 env:
   LOCAL_IMAGE: crittersjs
