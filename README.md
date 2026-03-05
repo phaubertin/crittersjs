@@ -24,8 +24,8 @@ See [the demo](https://phaubertin.github.io/crittersjs) hosted on GitHub Pages.
 
 ### Container Image from Public Registry
 
-If you have Docker installed, you can pull the pre-built image from the GitHub
-Container Registry (GHCR):
+If you have Docker installed, you can pull the pre-built image from the
+[GitHub Container Registry (GHCR)](https://github.com/phaubertin/crittersjs/pkgs/container/crittersjs):
 
 ```
 docker pull ghcr.io/phaubertin/crittersjs
@@ -39,8 +39,9 @@ docker run -d -p127.0.0.1:8080:80 --name crittersjs ghcr.io/phaubertin/crittersj
 
 And finally, navigate with your web browser of choice to [http://127.0.0.1:8080](http://127.0.0.1:8080).
 
-Alternatively, you can pull the image from the public Elastic Container
-Registry (ECR by AWS) and then adapt the run command accordingly:
+Alternatively, you can pull the image from the public
+[Elastic Container Registry (ECR by AWS)](https://gallery.ecr.aws/phaubertin/crittersjs)
+and then adapt the run command accordingly:
 
 ```
 docker pull public.ecr.aws/phaubertin/crittersjs
