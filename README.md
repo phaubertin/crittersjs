@@ -37,8 +37,6 @@ Then, start the container as follow:
 docker run -d -p127.0.0.1:8080:80 --name crittersjs ghcr.io/phaubertin/crittersjs
 ```
 
-And finally, navigate with your web browser of choice to [http://127.0.0.1:8080](http://127.0.0.1:8080).
-
 Alternatively, you can pull the image from the public
 [Elastic Container Registry (ECR by AWS)](https://gallery.ecr.aws/phaubertin/crittersjs)
 and then adapt the run command accordingly:
@@ -47,6 +45,8 @@ and then adapt the run command accordingly:
 docker pull public.ecr.aws/phaubertin/crittersjs
 docker run -d -p127.0.0.1:8080:80 --name crittersjs public.ecr.aws/phaubertin/crittersjs
 ```
+
+Finally, navigate with your web browser of choice to [http://127.0.0.1:8080](http://127.0.0.1:8080).
 
 Build Requirements
 ------------------
