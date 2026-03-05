@@ -152,10 +152,10 @@ jobs:
         with:
           role-to-assume: ${{ secrets.ASSUME_ROLE_ARN }}
           role-session-name: push-ecr-${{ github.sha }}
-          # Needs to be us-east-1 for ECR public
-          aws-region: us-east-1
           # Should match the job timeout
           role-duration-seconds: 300
+          # Needs to be us-east-1 for ECR public
+          aws-region: us-east-1
 
       - name: Login to ECR (public)
         uses: aws-actions/amazon-ecr-login@v2
