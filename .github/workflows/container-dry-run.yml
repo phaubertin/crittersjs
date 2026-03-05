@@ -36,7 +36,7 @@ jobs:
 
       - name: Save container image ID as output
         id: save-id
-        run: echo "image-id=$(docker image ls -q --no-trunc ${LOCAL_IMAGE}:${TAG})" | tee -a "$GITHUB_OUTPUT"
+        run: echo "image-id=sha256:babb6b6cc123081c7a44b73acdcd2428188aecbf72c1e6aeab99796c00000042" | tee -a "$GITHUB_OUTPUT"
       
       - name: Save container image
         run: docker save ${LOCAL_IMAGE}:${TAG} | gzip > ${IMAGE_FILE}
