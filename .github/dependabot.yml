@@ -6,6 +6,15 @@ updates:
     - dependency-type: all
   schedule:
     interval: daily
+    time: "19:30"
+    timezone: "America/Montreal"
+  cooldown:
+    default-days: 3
   groups:
     everything:
       patterns: ["*"]
+  # Some dependencies are not ready for TypeScript 7.0.x and the situation will
+  # likely remain the same until 7.1.0. Remain on 6.x.y for the time being.
+  ignore:
+    - dependency-name: typescript
+      update-types: ["version-update:semver-major"]
