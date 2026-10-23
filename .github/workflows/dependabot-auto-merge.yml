@@ -1,0 +1,28 @@
+# See examples provided here:
+# https://docs.github.com/en/code-security/tutorials/secure-your-dependencies/automate-dependabot-with-actions
+name: Dependabot auto-merge
+
+on: pull_request_target
+
+jobs:
+  dependabot:
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    if: >-
+      github.repository == 'phaubertin/crittersjs'
+      && github.event.pull_request.user.login == 'dependabot[bot]'
+      && github.event.pull_request.base.ref == github.event.repository.default_branch
+    steps:
+    - name: Approve the PR
+      run: gh pr review --approve "$PR_URL"
+      env:
+        PR_URL: ${{ github.event.pull_request.html_url }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Enable auto-merge for Dependabot PRs
+      run: gh pr merge --auto --squash "$PR_URL"
+      env:
+        PR_URL: ${{ github.event.pull_request.html_url }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
